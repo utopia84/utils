@@ -1,0 +1,118 @@
+/**
+ * Shared file between builds so that they can all use the same dependencies and
+ * maven repositories.
+ **/
+ext.deps = [:]
+
+
+//版本号控制区域
+def versions = [:]
+versions.android_gradle_plugin = '3.5.3'
+versions.support = "28.0.0"
+versions.glide = "4.9.0"
+versions.rxjava2 = "2.1.15"
+versions.rx_android = "2.0.1"
+versions.rxbinding = "1.0.1"
+versions.retrofit = "2.3.0"
+versions.gson = "2.8.2"
+versions.litepal = "3.0.0"
+versions.arouter_compiler = "1.1.4"
+versions.arouter_api = "1.3.1"
+versions.objectbox = "2.4.0"
+versions.fireCrasher = "1.5.1"
+versions.okhttp = "3.12.1"
+versions.logging_interceptor = "3.4.1"
+versions.eventbus = "3.1.1"
+versions.alicloud_android_push = "3.1.9.1"
+ext.versions = versions
+
+def deps = [:]
+deps.autolayout = 'com.zhy:autolayout:1.4.5'
+deps.alicloud_android_push = "com.aliyun.ams:alicloud-android-push:$versions.alicloud_android_push"
+
+def support = [:]
+support.annotations = "com.android.support:support-annotations:$versions.support"
+support.recyclerview = "androidx.recyclerview:recyclerview:1.0.0"
+support.v4 = "com.android.support:support-v4:$versions.support"
+support.androidXAppcompat = "androidx.appcompat:appcompat:1.2.0"
+support.androidXFragment = "androidx.fragment:fragment:1.2.5"
+support.androidXAnnotation = "androidx.annotation:annotation:1.1.0"
+support.junit = "junit:junit:4.13"
+deps.support = support
+
+
+def okhttp3 = [:]
+okhttp3.okhttp = "com.squareup.okhttp3:okhttp:$versions.okhttp"
+okhttp3.logging_interceptor = "com.squareup.okhttp3:logging-interceptor:$versions.logging_interceptor"
+deps.okhttp3 = okhttp3
+
+def retrofit = [:]
+retrofit.runtime = "com.squareup.retrofit2:retrofit:$versions.retrofit"
+retrofit.adapter = "com.squareup.retrofit2:adapter-rxjava:$versions.retrofit"
+retrofit.gson = "com.squareup.retrofit2:converter-gson:$versions.retrofit"
+deps.retrofit = retrofit
+
+def glide = [:]
+glide.runtime = "com.github.bumptech.glide:glide:$versions.glide"
+glide.compiler = "com.github.bumptech.glide:compiler:$versions.glide"
+deps.glide = glide
+
+//objectbox
+def objectbox = [:]
+objectbox.debug = "io.objectbox:objectbox-android-objectbrowser:$versions.objectbox"
+//objectbox.release = "io.objectbox:objectbox-android:$versions.objectbox"
+deps.objectbox = objectbox
+
+deps.easy_recycler = "com.jude:easyrecyclerview:$versions.easy_recycler"
+deps.photo_view = "com.github.chrisbanes:PhotoView:$versions.photo_view"
+deps.material_dialog = "com.afollestad.material-dialogs:core:$versions.material_dialog"
+
+deps.android_gradle_plugin = "com.android.tools.build:gradle:$versions.android_gradle_plugin"
+deps.rxjava2 = "io.reactivex.rxjava2:rxjava:$versions.rxjava2"
+deps.rx_android = "io.reactivex.rxjava2:rxandroid:$versions.rx_android"
+deps.rxbinding = "com.jakewharton.rxbinding:rxbinding:$versions.rxbinding"
+
+deps.eventbus = "org.greenrobot:eventbus:$versions.eventbus"
+//other
+
+deps.persistent_cookie = "com.github.franmontiel:PersistentCookieJar:$versions.persistent_cookie"
+deps.gson = "com.google.code.gson:gson:$versions.gson"
+deps.permission = "com.yanzhenjie:permission:$versions.permission"
+deps.utils = "com.blankj:utilcode:$versions.utils"
+deps.top_snackbar ="com.androidadvance:topsnackbar:$versions.top_snackbar"
+deps.litepal = "org.litepal.android:java:$versions.litepal"
+deps.toasty =  "com.github.GrenderG:Toasty:$versions.toasty"
+deps.logger = "com.orhanobut:logger:$versions.logger"
+deps.arouter_api = "com.alibaba:arouter-api:$versions.arouter_api"
+deps.arouter_compiler = "com.alibaba:arouter-compiler:$versions.arouter_compiler"
+
+ext.deps = deps
+
+def build_versions = [:]
+build_versions.compileSdkVersion = 29
+build_versions.targetSdkVersion = 29
+build_versions.minSdkVersion = 19
+build_versions.buildToolsVersion = "28.0.3"
+ext.build_versions = build_versions
+
+def app_version = [:]
+app_version.code = 771
+app_version.name = 'V7.7.1'
+ext.app_version = app_version
+
+static def addRepos(RepositoryHandler handler) {
+    handler.google()
+    handler.jcenter()
+    handler.mavenCentral()
+    //Add the JitPack repository
+    handler.maven { url "https://jitpack.io" }
+    handler.maven{ url 'http://maven.aliyun.com/nexus/content/groups/public/'}
+    handler.maven {url 'http://maven.aliyun.com/nexus/content/repositories/releases/' }
+    handler.maven{ url 'http://maven.aliyun.com/nexus/content/groups/public/'}
+    handler.maven {
+        url 'https://maven.google.com/'
+        name 'Google'
+    }
+}
+
+ext.addRepos = this.&addRepos

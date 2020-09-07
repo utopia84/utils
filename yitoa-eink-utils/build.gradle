@@ -1,0 +1,14 @@
+apply from: "${rootProject.rootDir}/common_config.gradle"
+project.ext.setLibraryConfig project
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+}
+
+apply from: 'bintray.gradle'

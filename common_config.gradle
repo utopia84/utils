@@ -1,0 +1,58 @@
+apply from: "${rootProject.rootDir}/versions.gradle"
+
+project.ext {
+    //设置application默认配置
+    setApplicationConfig = {
+        extension ->
+            extension.apply plugin: 'com.android.application'
+            extension.description "app"
+            setAndroidConfig extension.android
+            setDependencies extension.dependencies
+    }
+
+    //设置LibDefault默认配置
+    setLibraryConfig = {
+        extension ->
+            extension.apply plugin: 'com.android.library'
+            extension.description "library"
+            setAndroidConfig extension.android
+            setDependencies extension.dependencies
+    }
+
+    //设置Android配置
+    setAndroidConfig = {
+        extension ->
+            extension.compileSdkVersion build_versions.compileSdkVersion
+            extension.buildToolsVersion build_versions.buildToolsVersion
+
+            extension.defaultConfig {
+                minSdkVersion build_versions.minSdkVersion
+                targetSdkVersion build_versions.targetSdkVersion
+
+                //Arouter配置
+                javaCompileOptions {
+                    annotationProcessorOptions {
+                        arguments = [moduleName: project.getName()]
+                    }
+                }
+            }
+
+            extension.compileOptions {
+                sourceCompatibility JavaVersion.VERSION_1_8
+                targetCompatibility JavaVersion.VERSION_1_8
+            }
+
+            extension.lintOptions {
+                abortOnError false
+            }
+    }
+
+
+    //依赖库配置
+    setDependencies = {
+        extension ->
+            extension.implementation fileTree(dir: 'libs', include: ['*.aar,*.jar'])
+            extension.testImplementation deps.support.junit
+            extension.implementation deps.support.androidXAppcompat
+    }
+}
