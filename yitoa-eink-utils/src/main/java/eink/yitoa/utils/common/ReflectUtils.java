@@ -9,10 +9,9 @@ import java.lang.reflect.Method;
 public final class ReflectUtils {
     private Method mMethod;
     private Class<?> mClazz;
+    private Object mInstance;
 
-    private ReflectUtils(){
-        this.mClazz = null;
-    }
+    private ReflectUtils(){}
 
     private ReflectUtils(Class<?> clazz){
         this.mClazz = clazz;
@@ -24,12 +23,19 @@ public final class ReflectUtils {
      * @return ReflectUtils
      */
     public static ReflectUtils reflect(String className) throws ReflectException {
-        Class<?> clazz = null;
+        Class<?> clazz ;
         try {
             clazz = Class.forName(className);
         } catch (ClassNotFoundException e) {
             throw new ReflectException(e);
         }
+        return new ReflectUtils(clazz);
+    }
+
+    /**
+     * 直接通过class反射
+     */
+    public static ReflectUtils reflect(final Class<?> clazz){
         return new ReflectUtils(clazz);
     }
 
@@ -54,15 +60,31 @@ public final class ReflectUtils {
     }
 
     /**
+     * 需要实例化后调用反射方法的，需要在invoke之前调用，否则默认以静态方法方式调用method
+     * @return ReflectUtils 实例
+     */
+    public ReflectUtils newInstance() throws ReflectException {
+        if (mClazz != null) {
+            try {
+                mInstance = mClazz.newInstance();
+            } catch (Exception e) {
+                throw new ReflectException(e);
+            }
+        }else{
+            throw new ReflectException("ClassNotFoundException");
+        }
+        return this;
+    }
+
+    /**
      * 开始调用方法
-     * @param receiver 调用此方法的object
      * @param args 方法参数
      */
-    public Object invoke(Object receiver, Object... args) throws ReflectException {
-        Object t = null;
+    public Object invoke(Object... args) throws ReflectException {
+        Object t ;
         if (mMethod != null){
             try {
-                t = mMethod.invoke(null,args);
+                t = mMethod.invoke(mInstance,args);
             } catch (Exception e) {
                 throw new ReflectException("方法调用错误！");
             }

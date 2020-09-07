@@ -4,12 +4,12 @@ import android.annotation.SuppressLint;
 import android.view.View;
 import java.lang.reflect.Method;
 
+import eink.yitoa.utils.common.ReflectUtils;
+
 /**
  * Eink刷新模式
  */
 public class EinkRefreshMode {
-    private static final int EINK_DISPLAY_STRATEGY_ALL_FLIP_WITHOUT_LAST = 3;
-
     private EinkRefreshMode() {
         throw new UnsupportedOperationException("u can't instantiate me...");
     }
@@ -50,11 +50,10 @@ public class EinkRefreshMode {
      */
     @SuppressLint("PrivateApi")
     private static void setGuowenRefreshMode(int refreshMode) throws Exception {
-        Class<?> rkClass = Class.forName("android.os.RkDisplayOutputManager");
-        Method method = rkClass.getMethod("setEpdModeNoneArea", int.class);
-        method.setAccessible(true);
-        Object objectBook = rkClass.newInstance();
-        method.invoke(objectBook,refreshMode);
+        ReflectUtils.reflect("android.os.RkDisplayOutputManager")
+                .method("setEpdModeNoneArea", int.class)
+                .newInstance()
+                .invoke(refreshMode);
     }
 
     /**
@@ -63,9 +62,8 @@ public class EinkRefreshMode {
      * @throws Exception 抛出反射异常
      */
     private static void setYitoaRefreshMode(int mode) throws Exception{
-        Method method = View.class.getMethod("setEinkUpdateStrategy", int.class, int.class, int.class, int.class);
-        method.setAccessible(true);
-        method.invoke(null, EinkRefreshMode.EINK_DISPLAY_STRATEGY_ALL_FLIP_WITHOUT_LAST,
-                mode,mode,mode);
+        ReflectUtils.reflect(View.class)
+                .method("setEinkUpdateStrategy", int.class, int.class, int.class, int.class)
+                .invoke(3,mode,mode,mode);//3表示只刷最后一帧
     }
 }

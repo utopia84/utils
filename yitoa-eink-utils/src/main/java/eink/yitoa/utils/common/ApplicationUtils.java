@@ -17,7 +17,7 @@ public class ApplicationUtils {
         try{
             application = (Application)ReflectUtils.reflect("android.app.ActivityThread")
                     .method("currentApplication")
-                    .invoke(null);
+                    .invoke();
         }catch (Exception ignored){
 
         }
@@ -30,7 +30,7 @@ public class ApplicationUtils {
         try {
             application = (Application)ReflectUtils.reflect("android.app.AppGlobals")
                     .method("getInitialApplication")
-                    .invoke(null);
+                    .invoke();
         } catch (Exception ignored) {
         }
         return application;
