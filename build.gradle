@@ -3,7 +3,7 @@ buildscript {
     addRepos(repositories)
 
     dependencies {
-        classpath deps.android_gradle_plugin
+        classpath "com.android.tools.build:gradle:${versions.android_gradle_plugin}"
 
         classpath 'com.novoda:bintray-release:0.9.2'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'

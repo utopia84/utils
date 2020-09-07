@@ -1,5 +1,6 @@
 package eink.yitoa.utils;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
@@ -20,13 +21,15 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SystemUtil {
+import eink.yitoa.utils.common.ApplicationUtils;
+import eink.yitoa.utils.common.ReflectUtils;
 
+public class SystemUtil {
     private Context mContext;
+
     private static final String FILENAME_MSV = "/sys/board_properties/soc/msv";
     private static final String FILENAME_PROC_VERSION = "/proc/version";
     private static final String LOG_TAG = "SystemUtil";
@@ -64,6 +67,22 @@ public class SystemUtil {
             };
 
     private SystemPresenter mSystemPresenter;
+    @SuppressLint("StaticFieldLeak")
+    private volatile static SystemUtil systemUtil;
+    public static SystemUtil getInstance(){
+        if (systemUtil == null){
+            synchronized (SystemUtil.class){
+                if (systemUtil == null){
+                    systemUtil = new SystemUtil(ApplicationUtils.getApplication());
+                }
+            }
+        }
+        return systemUtil;
+    }
+
+    private SystemUtil() {
+
+    }
 
     private SystemUtil(Context context) {
         mContext = context;
@@ -532,6 +551,7 @@ public class SystemUtil {
 
         return flag;
     }
+
 
 
 }

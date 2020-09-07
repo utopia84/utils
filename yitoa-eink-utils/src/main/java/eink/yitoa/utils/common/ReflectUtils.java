@@ -1,402 +1,74 @@
 package eink.yitoa.utils.common;
 
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
+/**
+ * 反射相关类
+ */
 public final class ReflectUtils {
+    private Method mMethod;
+    private Class<?> mClazz;
 
-    private final Class<?> type;
-
-    private final Object object;
-
-    private ReflectUtils(final Class<?> type) {
-        this(type, type);
+    private ReflectUtils(){
+        this.mClazz = null;
     }
 
-    private ReflectUtils(final Class<?> type, Object object) {
-        this.type = type;
-        this.object = object;
+    private ReflectUtils(Class<?> clazz){
+        this.mClazz = clazz;
     }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // reflect
-    ///////////////////////////////////////////////////////////////////////////
 
     /**
-     * Reflect the class.
-     *
-     * @param className The name of class.
-     * @return the single {@link ReflectUtils} instance
-     * @throws ReflectException if reflect unsuccessfully
+     * 反射获取某个类
+     * @param className 类全名（包含包名）
+     * @return ReflectUtils
      */
-    public static ReflectUtils reflect(final String className)
-            throws ReflectException {
+    public static ReflectUtils reflect(String className) throws ReflectException {
         Class<?> clazz = null;
         try {
             clazz = Class.forName(className);
         } catch (ClassNotFoundException e) {
             throw new ReflectException(e);
         }
-        return reflect(clazz);
-    }
-
-    /**
-     * Reflect the class.
-     *
-     * @param clazz The class.
-     * @return the single {@link ReflectUtils} instance
-     */
-    public static ReflectUtils reflect(final Class<?> clazz){
         return new ReflectUtils(clazz);
     }
 
     /**
-     * Reflect the class.
-     *
-     * @param object The object.
-     * @return the single {@link ReflectUtils} instance
+     * 反射获取某个类里面的方法
+     * @param methodName 方法全名
+     * @param parameterTypes 参数类型
+     * @return Method
      */
-    public static ReflectUtils reflect(final Object object) {
-        return new ReflectUtils(object == null ? Object.class : object.getClass(), object);
-    }
-
-
-    ///////////////////////////////////////////////////////////////////////////
-    // newInstance
-    ///////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Create and initialize a new instance.
-     *
-     * @return the single {@link ReflectUtils} instance
-     */
-    public ReflectUtils newInstance() throws ReflectException {
-        return newInstance(new Object[0]);
-    }
-
-    /**
-     * Create and initialize a new instance.
-     *
-     * @param args The args.
-     * @return the single {@link ReflectUtils} instance
-     */
-    public ReflectUtils newInstance(Object... args) throws ReflectException {
-        Class<?>[] types = getArgsType(args);
-        try {
-            Constructor<?> constructor = type().getDeclaredConstructor(types);
-            return newInstance(constructor, args);
-        } catch (NoSuchMethodException e) {
-            List<Constructor<?>> list = new ArrayList<>();
-            for (Constructor<?> constructor : type().getDeclaredConstructors()) {
-                if (match(constructor.getParameterTypes(), types)) {
-                    list.add(constructor);
-                }
-            }
-            if (list.isEmpty()) {
-                throw new ReflectException(e);
-            } else {
-                sortConstructors(list);
-                return newInstance(list.get(0), args);
-            }
-        }
-    }
-
-    /**
-     * 获取参数的数据类型
-     * @param args 可变参数
-     * @return 数据类型数组
-     */
-    private Class<?>[] getArgsType(final Object... args) {
-        if (args == null) return new Class[0];
-        Class<?>[] result = new Class[args.length];
-        for (int i = 0; i < args.length; i++) {
-            Object value = args[i];
-            result[i] = value == null ? NULL.class : value.getClass();
-        }
-        return result;
-    }
-
-    private void sortConstructors(List<Constructor<?>> list) {
-        Collections.sort(list, (o1, o2) -> {
-            Class<?>[] types1 = o1.getParameterTypes();
-            Class<?>[] types2 = o2.getParameterTypes();
-            int len = types1.length;
-            for (int i = 0; i < len; i++) {
-                if (!types1[i].equals(types2[i])) {
-                    if (wrapper(types1[i]).isAssignableFrom(wrapper(types2[i]))) {
-                        return 1;
-                    } else {
-                        return -1;
-                    }
-                }
-            }
-            return 0;
-        });
-    }
-
-    private ReflectUtils newInstance(final Constructor<?> constructor, final Object... args) throws ReflectException {
-        try {
-            return new ReflectUtils(
-                    constructor.getDeclaringClass(),
-                    accessible(constructor).newInstance(args)
-            );
-        } catch (Exception e) {
-            throw new ReflectException(e);
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // field
-    ///////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Get the field.
-     *
-     * @param name The name of field.
-     * @return the single {@link ReflectUtils} instance
-     */
-    public ReflectUtils field(final String name) throws ReflectException {
-        try {
-            Field field = getField(name);
-            return new ReflectUtils(field.getType(), field.get(object));
-        } catch (IllegalAccessException e) {
-            throw new ReflectException(e);
-        }
-    }
-
-    /**
-     * Set the field.
-     *
-     * @param name  The name of field.
-     * @param value The value.
-     * @return the single {@link ReflectUtils} instance
-     */
-    public ReflectUtils field(String name, Object value) throws ReflectException {
-        try {
-            Field field = getField(name);
-            field.set(object, unwrap(value));
-            return this;
-        } catch (Exception e) {
-            throw new ReflectException(e);
-        }
-    }
-
-    private Field getField(String name) throws IllegalAccessException, ReflectException {
-        Field field = getAccessibleField(name);
-        if ((field.getModifiers() & Modifier.FINAL) == Modifier.FINAL) {
+    public ReflectUtils method(String methodName, Class<?>... parameterTypes) throws ReflectException {
+        if (mClazz != null) {
             try {
-                Field modifiersField = Field.class.getDeclaredField("modifiers");
-                modifiersField.setAccessible(true);
-                modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-            } catch (NoSuchFieldException ignore) {
-                // runs in android will happen
-                field.setAccessible(true);
+                mMethod = mClazz.getDeclaredMethod(methodName,parameterTypes);
+                mMethod.setAccessible(true);
+            } catch (NoSuchMethodException e) {
+                throw new ReflectException(e);
             }
+        }else{
+            throw new ReflectException("ClassNotFoundException");
         }
-        return field;
-    }
-
-    private Field getAccessibleField(String name) throws ReflectException {
-        Class<?> type = type();
-        try {
-            return accessible(type.getField(name));
-        } catch (NoSuchFieldException e) {
-            do {
-                try {
-                    return accessible(type.getDeclaredField(name));
-                } catch (NoSuchFieldException ignore) {
-                }
-                type = type.getSuperclass();
-            } while (type != null);
-            throw new ReflectException(e);
-        }
-    }
-
-    private Object unwrap(Object object) {
-        if (object instanceof ReflectUtils) {
-            return ((ReflectUtils) object).get();
-        }
-        return object;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // method
-    ///////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Invoke the method.
-     *
-     * @param name The name of method.
-     * @return the single {@link ReflectUtils} instance
-     * @throws ReflectException if reflect unsuccessfully
-     */
-    public ReflectUtils method(final String name) throws ReflectException {
-        return method(name, new Object[0]);
+        return this;
     }
 
     /**
-     * Invoke the method.
-     *
-     * @param name The name of method.
-     * @param args The args.
-     * @return the single {@link ReflectUtils} instance
-     * @throws ReflectException if reflect unsuccessfully
+     * 开始调用方法
+     * @param receiver 调用此方法的object
+     * @param args 方法参数
      */
-    public ReflectUtils method(final String name, final Object... args) throws ReflectException {
-        Class<?>[] types = getArgsType(args);
-        try {
-            Method method = exactMethod(name, types);
-            return method(method, object, args);
-        } catch (NoSuchMethodException e) {
-            throw new ReflectException(e);
-        }
-    }
-
-    private ReflectUtils method(final Method method, final Object obj, final Object... args) throws ReflectException {
-        try {
-            accessible(method);
-            if (method.getReturnType() == void.class) {
-                method.invoke(obj, args);
-                return reflect(obj);
-            } else {
-                return reflect(method.invoke(obj, args));
+    public Object invoke(Object receiver, Object... args) throws ReflectException {
+        Object t = null;
+        if (mMethod != null){
+            try {
+                t = mMethod.invoke(null,args);
+            } catch (Exception e) {
+                throw new ReflectException("方法调用错误！");
             }
-        } catch (Exception e) {
-            throw new ReflectException(e);
+        }else{
+            throw new ReflectException("NoSuchMethodException");
         }
-    }
-
-    private Method exactMethod(final String name, final Class<?>[] types)
-            throws NoSuchMethodException {
-        Class<?> type = type();
-        try {
-            return type.getMethod(name, types);
-        } catch (NoSuchMethodException e) {
-            do {
-                try {
-                    return type.getDeclaredMethod(name, types);
-                } catch (NoSuchMethodException ignore) {
-                }
-                type = type.getSuperclass();
-            } while (type != null);
-            throw new NoSuchMethodException();
-        }
-    }
-
-
-
-    private boolean match(final Class<?>[] declaredTypes, final Class<?>[] actualTypes) {
-        if (declaredTypes.length == actualTypes.length) {
-            for (int i = 0; i < actualTypes.length; i++) {
-                if (actualTypes[i] == NULL.class
-                        || wrapper(declaredTypes[i]).isAssignableFrom(wrapper(actualTypes[i]))) {
-                    continue;
-                }
-                return false;
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private <T extends AccessibleObject> T accessible(T accessible) {
-        if (accessible == null) return null;
-        if (accessible instanceof Member) {
-            Member member = (Member) accessible;
-            if (Modifier.isPublic(member.getModifiers())
-                    && Modifier.isPublic(member.getDeclaringClass().getModifiers())) {
-                return accessible;
-            }
-        }
-        if (!accessible.isAccessible()) accessible.setAccessible(true);
-        return accessible;
-    }
-
-
-
-    private Class<?> type() {
-        return type;
-    }
-
-    private Class<?> wrapper(final Class<?> type) {
-        if (type == null) {
-            return null;
-        } else if (type.isPrimitive()) {
-            if (boolean.class == type) {
-                return Boolean.class;
-            } else if (int.class == type) {
-                return Integer.class;
-            } else if (long.class == type) {
-                return Long.class;
-            } else if (short.class == type) {
-                return Short.class;
-            } else if (byte.class == type) {
-                return Byte.class;
-            } else if (double.class == type) {
-                return Double.class;
-            } else if (float.class == type) {
-                return Float.class;
-            } else if (char.class == type) {
-                return Character.class;
-            } else if (void.class == type) {
-                return Void.class;
-            }
-        }
-        return type;
-    }
-
-    /**
-     * Get the result.
-     *
-     * @param <T> The value type.
-     * @return the result
-     */
-    @SuppressWarnings("unchecked")
-    public <T> T get() {
-        return (T) object;
-    }
-
-    @Override
-    public int hashCode() {
-        return object.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof ReflectUtils && object.equals(((ReflectUtils) obj).get());
-    }
-
-    @Override
-    public String toString() {
-        return object.toString();
-    }
-
-    private static class NULL {
-    }
-
-    public static class ReflectException extends Exception {
-
-        private static final long serialVersionUID = 858774075258496016L;
-
-        public ReflectException(String message) {
-            super(message);
-        }
-
-        public ReflectException(String message, Throwable cause) {
-            super(message, cause);
-        }
-
-        public ReflectException(Throwable cause) {
-            super(cause);
-        }
+        return t;
     }
 }
