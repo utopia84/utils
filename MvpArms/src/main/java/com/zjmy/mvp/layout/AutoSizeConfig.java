@@ -2,12 +2,9 @@ package com.zjmy.mvp.layout;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
-
-import com.zjmy.mvp.layout.utils.AutoSizeLog;
-import com.zjmy.mvp.layout.utils.Preconditions;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import eink.yitoa.utils.common.ScreenUtils;
@@ -17,6 +14,7 @@ import eink.yitoa.utils.common.ScreenUtils;
  * density = dpi / 160;
  * px = density * dp;
  *
+ * AutoSizeConfig.getInstance().setDesignSizeInDp(1080,1920).setUseDeviceSize(false).init(this);
  */
 public class AutoSizeConfig {
     private static final String KEY_DESIGN_WIDTH_IN_DP = "design_width_in_dp";
@@ -87,36 +85,31 @@ public class AutoSizeConfig {
 
     /**
      * 初始化方法只能调用一次, 否则报错
-     * 此方法默认使用以宽度进行等比例适配, 如想使用以高度进行等比例适配, 请调用 {@link #init(Application, boolean)}
+     * 此方法默认使用以宽度进行等比例适配}
      *
      * @param application {@link Application}
      */
     @SuppressLint("RestrictedApi")
-    public AutoSizeConfig init(final Application application, boolean isBaseOnWidth) {
+    public void init(final Application application) {
         Preconditions.checkArgument(mInitDensity == -1, "AutoSizeConfig#init() can only be called once");
         Preconditions.checkNotNull(application, "application == null");
 
         this.mApplication = application;
-        this.isBaseOnWidth = isBaseOnWidth;
         final DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
-        final Configuration configuration = Resources.getSystem().getConfiguration();
-
         //检查是否在 Application#onCreate中调用setDesignSizeInDp配置设计图尺寸的方式
-        checkDesignSizeIsLegal();
+        Preconditions.checkArgument(mDesignWidthInDp > 0 && mDesignHeightInDp > 0, "designSize must be set");
 
         int[] screenSize = ScreenUtils.getScreenSize(application);
         mScreenWidth = screenSize[0];
         mScreenHeight = screenSize[1];
         mStatusBarHeight = ScreenUtils.getStatusBarHeight();
-        AutoSizeLog.e("designWidthInDp = " + mDesignWidthInDp + ", designHeightInDp = " + mDesignHeightInDp + ", screenWidth = " + mScreenWidth + ", screenHeight = " + mScreenHeight);
+        Log.e("debug","designWidthInDp = " + mDesignWidthInDp + ", designHeightInDp = " + mDesignHeightInDp + ", screenWidth = " + mScreenWidth + ", screenHeight = " + mScreenHeight);
 
         mInitDensity = displayMetrics.density;
         mInitScaledDensity = displayMetrics.scaledDensity;
 
         //自动监听调用相关适配
         application.registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacksImpl());
-        AutoSizeLog.e("initDensity = " + mInitDensity + ", initScaledDensity = " + mInitScaledDensity);
-        return this;
     }
 
 
@@ -134,9 +127,15 @@ public class AutoSizeConfig {
         return this;
     }
 
-    public void checkDesignSizeIsLegal(){
-        Preconditions.checkArgument(mDesignWidthInDp > 0, "designWidthInDp must be > 0");
-        Preconditions.checkArgument(mDesignHeightInDp > 0, "designHeightInDp must be > 0");
+    /**
+     * 是否全局按照宽度进行等比例适配
+     *
+     * @param baseOnWidth {@code true} 为按照宽度, {@code false} 为按照高度
+     * @see #isBaseOnWidth 详情请查看这个字段的注释
+     */
+    public AutoSizeConfig setBaseOnWidth(boolean baseOnWidth) {
+        isBaseOnWidth = baseOnWidth;
+        return this;
     }
 
     /**
@@ -146,16 +145,6 @@ public class AutoSizeConfig {
      */
     public float getInitDensity() {
         return mInitDensity;
-    }
-
-    /**
-     * 是否打印 Log
-     *
-     * @param log {@code true} 为打印
-     */
-    public AutoSizeConfig setLog(boolean log) {
-        AutoSizeLog.setDebug(log);
-        return this;
     }
 
     /**
@@ -193,7 +182,7 @@ public class AutoSizeConfig {
      * @return {@link #mScreenHeight}
      */
     public int getScreenHeight() {
-        return isUseDeviceSize() ? mScreenHeight : mScreenHeight - mStatusBarHeight;
+        return isUseDeviceSize ? mScreenHeight : mScreenHeight - mStatusBarHeight;
     }
 
     /**

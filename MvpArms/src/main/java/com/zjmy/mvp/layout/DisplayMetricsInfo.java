@@ -4,39 +4,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.DisplayMetrics;
 
-public class DisplayMetricsInfo implements Parcelable {
-    private float density;
-    private int densityDpi;
-    private float scaledDensity;
+class DisplayMetricsInfo implements Parcelable {
+    float density;
+    int densityDpi;
+    float scaledDensity;
 
     public DisplayMetricsInfo(float density, int densityDpi, float scaledDensity) {
         this.density = density;
         this.densityDpi = densityDpi;
-        this.scaledDensity = scaledDensity;
-    }
-
-
-    public float getDensity() {
-        return density;
-    }
-
-    public void setDensity(float density) {
-        this.density = density;
-    }
-
-    public int getDensityDpi() {
-        return densityDpi;
-    }
-
-    public void setDensityDpi(int densityDpi) {
-        this.densityDpi = densityDpi;
-    }
-
-    public float getScaledDensity() {
-        return scaledDensity;
-    }
-
-    public void setScaledDensity(float scaledDensity) {
         this.scaledDensity = scaledDensity;
     }
 
@@ -70,13 +45,4 @@ public class DisplayMetricsInfo implements Parcelable {
             return new DisplayMetricsInfo[size];
         }
     };
-
-    @Override
-    public String toString() {
-        return "DisplayMetricsInfo{" +
-                "density=" + density +
-                ", densityDpi=" + densityDpi +
-                ", scaledDensity=" + scaledDensity +
-                '}';
-    }
 }

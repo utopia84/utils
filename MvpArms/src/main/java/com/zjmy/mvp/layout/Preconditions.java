@@ -1,4 +1,4 @@
-package com.zjmy.mvp.layout.utils;
+package com.zjmy.mvp.layout;
 
 import android.os.Looper;
 

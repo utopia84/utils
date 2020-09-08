@@ -7,9 +7,9 @@ public class Application extends android.app.Application {
     public void onCreate() {
         super.onCreate();
         AutoSizeConfig.getInstance()
-                .setLog(true)
                 .setDesignSizeInDp(1080,1920)
                 .setUseDeviceSize(false)
-                .init(this,true);
+                .setBaseOnWidth(true)
+                .init(this);
     }
 }

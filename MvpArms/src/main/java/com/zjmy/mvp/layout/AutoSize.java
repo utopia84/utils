@@ -3,9 +3,6 @@ package com.zjmy.mvp.layout;
 import android.app.Activity;
 import android.util.DisplayMetrics;
 import android.util.SparseArray;
-import com.zjmy.mvp.layout.utils.AutoSizeLog;
-import com.zjmy.mvp.layout.utils.Preconditions;
-import java.util.Locale;
 
 public final class AutoSize {
     private static SparseArray<DisplayMetricsInfo> mCache = new SparseArray<>();
@@ -21,10 +18,12 @@ public final class AutoSize {
 
     public static void autoConvertDensityOfGlobal(Activity activity) {
         AutoSizeConfig config = AutoSizeConfig.getInstance();
-        if (config.isBaseOnWidth()) {//以宽度为基准进行适配
-            autoConvertDensity(activity, config.getDesignWidthInDp(), true);
-        } else {//以高度为基准进行适配
-            autoConvertDensity(activity, config.getDesignHeightInDp(), false);
+        if (config.getInitDensity() != -1) {//代表已开启屏幕适配
+            if (config.isBaseOnWidth()) {//以宽度为基准进行适配
+                autoConvertDensity(activity, config.getDesignWidthInDp(), true);
+            } else {//以高度为基准进行适配
+                autoConvertDensity(activity, config.getDesignHeightInDp(), false);
+            }
         }
     }
 
@@ -76,17 +75,12 @@ public final class AutoSize {
 
             mCache.put(key, new DisplayMetricsInfo(targetDensity, targetDensityDpi, targetScaledDensity));
         } else {
-            targetDensity = displayMetricsInfo.getDensity();
-            targetDensityDpi = displayMetricsInfo.getDensityDpi();
-            targetScaledDensity = displayMetricsInfo.getScaledDensity();
+            targetDensity = displayMetricsInfo.density;
+            targetDensityDpi = displayMetricsInfo.densityDpi;
+            targetScaledDensity = displayMetricsInfo.scaledDensity;
         }
 
         setDensity(activity, targetDensity, targetDensityDpi, targetScaledDensity);
-
-        AutoSizeLog.e(String.format(Locale.ENGLISH, "The %s has been adapted! \n%s Info: isBaseOnWidth = %s, %s = %f, %s = %f, targetDensity = %f, targetScaledDensity = %f, targetDensityDpi = %d"
-                , activity.getClass().getName(), activity.getClass().getSimpleName(), isBaseOnWidth, isBaseOnWidth ? "designWidthInDp"
-                        : "designHeightInDp", sizeInDp, isBaseOnWidth ? "designWidthInSubunits" : "designHeightInSubunits", subunitsDesignSize
-                , targetDensity, targetScaledDensity, targetDensityDpi));
     }
 
 
