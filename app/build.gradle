@@ -9,6 +9,7 @@ android{
 }
 
 dependencies {
-    //implementation 'com.zjmy:yitoa-eink-utils:1.0.0'
+    //implementation 'com.zjmy:yitoa-eink-utils:1.0.1'
     implementation project(path: ':yitoa-eink-utils')
+    implementation project(path: ':MvpArms')
 }

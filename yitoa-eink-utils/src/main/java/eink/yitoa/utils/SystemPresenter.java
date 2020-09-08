@@ -97,7 +97,6 @@ public class SystemPresenter {
 
     /**
      * 检测是否有读写设置权限
-     * @return
      */
     public boolean canWriteSettingPermission() {
         return ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_SETTINGS) !=

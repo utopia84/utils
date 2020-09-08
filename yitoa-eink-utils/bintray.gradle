@@ -2,9 +2,9 @@ apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
 def siteUrl = 'https://sxreader.com'
-def gitUrl = "http://edu.bjzjmy.com"
+def gitUrl = "https://github.com/utopia84/utils.git"
 
-version = "1.0.0"
+version = "1.0.1"
 group = "com.zjmy"
 
 

@@ -53,6 +53,16 @@ project.ext {
         extension ->
             extension.implementation fileTree(dir: 'libs', include: ['*.aar,*.jar'])
             extension.testImplementation deps.support.junit
+
+            //基础sdk
             extension.implementation deps.support.androidXAppcompat
+            extension.implementation deps.support.androidXAnnotation
+            extension.implementation deps.support.androidXFragment
+            extension.implementation deps.support.recyclerview
+
+            //rx框架
+            extension.implementation deps.rxjava2
+            extension.implementation deps.rx_android
+            extension.implementation deps.rxbinding
     }
 }

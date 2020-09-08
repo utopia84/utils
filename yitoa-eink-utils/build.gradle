@@ -3,6 +3,7 @@ project.ext.setLibraryConfig project
 
 android {
     compileSdkVersion 26
+
     defaultConfig {
         targetSdkVersion 26
         versionCode 1

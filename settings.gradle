@@ -1,3 +1,6 @@
+//include ':utils'
 include ':app'
+//include ':autolayout'
+include ':MvpArms'
 include ':yitoa-eink-utils'
 rootProject.name = "UtilsApplication"

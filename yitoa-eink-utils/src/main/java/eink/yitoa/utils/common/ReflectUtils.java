@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 public final class ReflectUtils {
     private Method mMethod;
     private Class<?> mClazz;
-    private Object mInstance;
+    private Object mInstance; //产生的结果,复用
 
     private ReflectUtils(){}
 
@@ -80,17 +80,20 @@ public final class ReflectUtils {
      * 开始调用方法
      * @param args 方法参数
      */
-    public Object invoke(Object... args) throws ReflectException {
-        Object t ;
+    public ReflectUtils invoke(Object... args) throws ReflectException {
         if (mMethod != null){
             try {
-                t = mMethod.invoke(mInstance,args);
+                mInstance = mMethod.invoke(mInstance,args);
             } catch (Exception e) {
                 throw new ReflectException("方法调用错误！");
             }
         }else{
             throw new ReflectException("NoSuchMethodException");
         }
-        return t;
+        return this;
+    }
+
+    public Object getResult(){
+        return mInstance;
     }
 }
