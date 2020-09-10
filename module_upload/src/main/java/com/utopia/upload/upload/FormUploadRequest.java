@@ -2,6 +2,8 @@ package com.utopia.upload.upload;
 
 import com.utopia.upload.upload.base.BaseUploadRequest;
 
+import java.util.Map;
+
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
@@ -15,8 +17,8 @@ public abstract class FormUploadRequest extends BaseUploadRequest {
                 .setType(MultipartBody.FORM);
 
         if (params != null && params.size() > 0) {
-            for (String key : params.keySet()) {
-                builder.addFormDataPart(key, params.get(key));
+            for(Map.Entry<String, String> entry : params.entrySet()){
+                builder.addFormDataPart(entry.getKey(), entry.getValue());
             }
         }
 

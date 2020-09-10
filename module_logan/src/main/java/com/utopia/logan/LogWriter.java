@@ -30,6 +30,25 @@ public class LogWriter {
 
     }
 
+    public static void writeFunLog(String log) {
+        if (sLoganControlCenter == null) {
+            Log.e("logan","Please initialize LogWriter first");
+        }else{
+            Log.e("logan","正在写入日志："+log);
+            sLoganControlCenter.write(LogType.FUNCTIONLOG, log + "\n");
+        }
+    }
+
+
+    public static void writeBehLog(String log) {
+        if (sLoganControlCenter == null) {
+            Log.e("logan","Please initialize LogWriter first");
+        }else{
+            Log.e("logan","正在写入日志："+log);
+            sLoganControlCenter.write(LogType.BEHAVIORLOG, log + "\n");
+        }
+    }
+
     /**
      * @brief 立即写入日志文件
      */

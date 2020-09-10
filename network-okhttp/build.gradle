@@ -2,5 +2,6 @@ apply from: "${rootProject.rootDir}/common_config.gradle"
 project.ext.setLibraryConfig project
 
 dependencies {
-    implementation project(':network-okhttp')
+    api deps.okhttp3.okhttp
+    implementation deps.okhttp3.logging_interceptor
 }

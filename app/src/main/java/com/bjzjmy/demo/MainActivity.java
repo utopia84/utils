@@ -1,12 +1,12 @@
 package com.bjzjmy.demo;
 
 import androidx.appcompat.app.AppCompatActivity;
-import eink.yitoa.utils.EinkRefreshMode;
-import eink.yitoa.utils.SystemUtil;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
+
+import com.utopia.logan.LogWriter;
 
 public class MainActivity extends AppCompatActivity {
     private TextView textView;
@@ -21,20 +21,11 @@ public class MainActivity extends AppCompatActivity {
         textView = findViewById(R.id.tv_content);
 
         findViewById(R.id.bt_test).setOnClickListener(v->{
-            //int no = SystemUtil.getInstance().getSystemSleepImageNo();
-            //textView.setText("随机数字："+no);
-            Intent intent = new Intent(this,SecondActivity.class);
-            startActivity(intent);
+            LogWriter.writeBehLog("我点击了按钮:"+i++);
         });
 
         findViewById(R.id.bt_change).setOnClickListener(v->{
-            if (!isFullRefresh) {
-                isFullRefresh = true;
-                EinkRefreshMode.updateToFullRefreshMode();
-            }else{
-                isFullRefresh = false;
-                EinkRefreshMode.updateToLocalRefreshMode();
-            }
+            LogWriter.s(true);
         });
     }
 }

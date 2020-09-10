@@ -5,13 +5,17 @@ android{
     defaultConfig {
         versionCode 1
         versionName "1.0.0"
+
+        ndk {
+            abiFilters 'armeabi', 'armeabi-v7a'
+        }
     }
 }
 
 dependencies {
     //implementation 'com.zjmy:yitoa-eink-utils:1.0.1'
-    implementation project(path: ':yitoa-eink-utils')
-    implementation project(path: ':MvpArms')
+//    implementation project(path: ':yitoa-eink-utils')
+    implementation project(path: ':module_logan')
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
 }
