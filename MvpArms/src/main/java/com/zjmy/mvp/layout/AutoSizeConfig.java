@@ -17,30 +17,27 @@ import eink.yitoa.utils.common.ScreenUtils;
  * AutoSizeConfig.getInstance().setDesignSizeInDp(1080,1920).setUseDeviceSize(false).init(this);
  */
 public class AutoSizeConfig {
-    private static final String KEY_DESIGN_WIDTH_IN_DP = "design_width_in_dp";
-    private static final String KEY_DESIGN_HEIGHT_IN_DP = "design_height_in_dp";
 
     private static volatile AutoSizeConfig sInstance;
-    private Application mApplication;
 
     /**
      * 最初的屏幕密度 {@link DisplayMetrics#density}
      */
-    private float mInitDensity = -1;
+    protected float mInitDensity = -1;
 
     /**
      * 最初的字体缩放比 {@link DisplayMetrics#scaledDensity}
      */
-    private float mInitScaledDensity;
+    protected float mInitScaledDensity;
 
     /**
      * 设计图上的总宽度, 单位 dp
      */
-    private int mDesignWidthInDp;
+    protected int mDesignWidthInDp;
     /**
      * 设计图上的总高度, 单位 dp
      */
-    private int mDesignHeightInDp;
+    protected int mDesignHeightInDp;
     /**
      * 设备的屏幕总宽度, 单位 px
      */
@@ -51,21 +48,21 @@ public class AutoSizeConfig {
     private int mScreenHeight;
     /**
      * 状态栏高度, 当 {@link #isUseDeviceSize} 为 {@code false} 时, AndroidAutoSize 会将 {@link #mScreenHeight} 减去状态栏高度
-     * AndroidAutoSize 默认使用 {@link ScreenUtils#getStatusBarHeight()} 方法获取状态栏高度
+     * AndroidAutoSize 默认使用 getStatusBarHeight 方法获取状态栏高度
      */
-    private int mStatusBarHeight;
+    protected int mStatusBarHeight;
     /**
      * 为了保证在不同高宽比的屏幕上显示效果也能完全一致, 所以本方案适配时是以设计图宽度与设备实际宽度的比例或设计图高度与设备实际高度的比例应用到
      * 每个 View 上 (只能在宽度和高度之中选一个作为基准), 从而使每个 View 的高和宽用同样的比例缩放, 避免在与设计图高宽比不一致的设备上出现适配的 View 高或宽变形的问题
-     * {@link #isBaseOnWidth} 为 {@code true} 时代表以宽度等比例缩放, {@code false} 代表以高度等比例缩放
-     * {@link #isBaseOnWidth} 为全局配置, 默认为 {@code true}, 每个 {@link AppCompatActivity} 也可以单独选择使用高或者宽做等比例缩放
+     * {isBaseOnWidth} 为 {@code true} 时代表以宽度等比例缩放, {@code false} 代表以高度等比例缩放
+     * {isBaseOnWidth} 为全局配置, 默认为 {@code true}, 每个 {@link AppCompatActivity} 也可以单独选择使用高或者宽做等比例缩放
      */
-    private boolean isBaseOnWidth = true;
+    protected boolean isBaseOnWidth = true;
 
     /**
      * 此字段表示是否使用设备的实际尺寸做适配
-     * {@link #isUseDeviceSize} 为 {@code true} 表示屏幕高度 {@link #mScreenHeight} 包含状态栏的高度
-     * {@link #isUseDeviceSize} 为 {@code false} 表示 {@link #mScreenHeight} 会减去状态栏的高度, 默认为 {@code true}
+     * {isUseDeviceSize} 为 {@code true} 表示屏幕高度 {@link #mScreenHeight} 包含状态栏的高度
+     * {isUseDeviceSize} 为 {@code false} 表示 {@link #mScreenHeight} 会减去状态栏的高度, 默认为 {@code true}
      */
     private boolean isUseDeviceSize = true;
 
@@ -94,7 +91,6 @@ public class AutoSizeConfig {
         Preconditions.checkArgument(mInitDensity == -1, "AutoSizeConfig#init() can only be called once");
         Preconditions.checkNotNull(application, "application == null");
 
-        this.mApplication = application;
         final DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
         //检查是否在 Application#onCreate中调用setDesignSizeInDp配置设计图尺寸的方式
         Preconditions.checkArgument(mDesignWidthInDp > 0 && mDesignHeightInDp > 0, "designSize must be set");
@@ -103,7 +99,7 @@ public class AutoSizeConfig {
         mScreenWidth = screenSize[0];
         mScreenHeight = screenSize[1];
         mStatusBarHeight = ScreenUtils.getStatusBarHeight();
-        Log.e("debug","designWidthInDp = " + mDesignWidthInDp + ", designHeightInDp = " + mDesignHeightInDp + ", screenWidth = " + mScreenWidth + ", screenHeight = " + mScreenHeight);
+        Log.e("test","designWidthInDp = " + mDesignWidthInDp + ", designHeightInDp = " + mDesignHeightInDp + ", screenWidth = " + mScreenWidth + ", screenHeight = " + mScreenHeight);
 
         mInitDensity = displayMetrics.density;
         mInitScaledDensity = displayMetrics.scaledDensity;
@@ -139,15 +135,6 @@ public class AutoSizeConfig {
     }
 
     /**
-     * 获取 {@link #mInitDensity}
-     *
-     * @return {@link #mInitDensity}
-     */
-    public float getInitDensity() {
-        return mInitDensity;
-    }
-
-    /**
      * 是否使用设备的实际尺寸做适配
      *
      * @param useDeviceSize {@code true} 为使用设备的实际尺寸 (包含状态栏), {@code false} 为不使用设备的实际尺寸 (不包含状态栏)
@@ -158,72 +145,11 @@ public class AutoSizeConfig {
         return this;
     }
 
-    /**
-     * 返回 {@link #isUseDeviceSize}
-     *
-     * @return {@link #isUseDeviceSize}
-     */
-    public boolean isUseDeviceSize() {
-        return isUseDeviceSize;
-    }
-
-    /**
-     * 返回 {@link #mScreenWidth}
-     *
-     * @return {@link #mScreenWidth}
-     */
-    public int getScreenWidth() {
-        return mScreenWidth;
-    }
-
-    /**
-     * 返回 {@link #mScreenHeight}
-     *
-     * @return {@link #mScreenHeight}
-     */
     public int getScreenHeight() {
         return isUseDeviceSize ? mScreenHeight : mScreenHeight - mStatusBarHeight;
     }
 
-    /**
-     * 返回 {@link #isBaseOnWidth}
-     *
-     * @return {@link #isBaseOnWidth}
-     */
-    public boolean isBaseOnWidth() {
-        return isBaseOnWidth;
-    }
-
-    /**
-     * 获取 {@link #mDesignWidthInDp}
-     *
-     * @return {@link #mDesignWidthInDp}
-     */
-    public int getDesignWidthInDp() {
-        Preconditions.checkArgument(mDesignWidthInDp > 0, "you must set " + KEY_DESIGN_WIDTH_IN_DP + "  in your AndroidManifest file");
-        return mDesignWidthInDp;
-    }
-
-    /**
-     * 获取 {@link #mDesignHeightInDp}
-     *
-     * @return {@link #mDesignHeightInDp}
-     */
-    public int getDesignHeightInDp() {
-        Preconditions.checkArgument(mDesignHeightInDp > 0, "you must set " + KEY_DESIGN_HEIGHT_IN_DP + "  in your AndroidManifest file");
-        return mDesignHeightInDp;
-    }
-
-    public Application getApplication(){
-        return mApplication;
-    }
-
-    /**
-     * 获取 {@link #mInitScaledDensity}
-     *
-     * @return {@link #mInitScaledDensity}
-     */
-    public float getInitScaledDensity() {
-        return mInitScaledDensity;
+    public int getScreenWidth() {
+        return mScreenWidth;
     }
 }

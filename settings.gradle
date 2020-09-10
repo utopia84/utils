@@ -1,6 +1,7 @@
 //include ':utils'
-include ':app'
-//include ':autolayout'
-include ':MvpArms'
-include ':yitoa-eink-utils'
+//include ':app'
+include ':module_logan'
+include ':module_upload'
+//include ':MvpArms'
+//include ':yitoa-eink-utils'
 rootProject.name = "UtilsApplication"

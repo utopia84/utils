@@ -2,16 +2,11 @@ apply from: "${rootProject.rootDir}/common_config.gradle"
 project.ext.setLibraryConfig project
 
 android {
-    defaultConfig {
-        versionCode 1
-        versionName "1.0.0"
-    }
-
 }
 
 dependencies {
-    //implementation 'com.zjmy:yitoa-eink-utils:1.0.1'
-    implementation project(path: ':yitoa-eink-utils')
+    implementation 'com.zjmy:yitoa-eink-utils:1.0.3'
+    //implementation project(path: ':yitoa-eink-utils')
 }
 
 apply from: 'bintray.gradle'

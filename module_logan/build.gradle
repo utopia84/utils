@@ -1,0 +1,25 @@
+apply from: "${rootProject.rootDir}/common_config.gradle"
+project.ext.setLibraryConfig project
+
+android {
+    defaultConfig {
+        externalNativeBuild {
+            cmake {
+                arguments '-DBUILD_TESTING=OFF'//, '-DANDROID_TOOLCHAIN=gcc'
+                cFlags "-std=c11"
+                abiFilters 'armeabi-v7a', 'x86'//, 'armeabi' , 'mips'
+            }
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
+}
+
+dependencies {
+    implementation project(':module_upload')
+    implementation deps.gson
+}

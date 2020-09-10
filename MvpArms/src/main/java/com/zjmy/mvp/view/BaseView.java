@@ -1,6 +1,5 @@
 package com.zjmy.mvp.view;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -9,6 +8,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import androidx.annotation.IdRes;
+import androidx.fragment.app.FragmentActivity;
 import eink.yitoa.utils.EinkRefreshMode;
 
 /**
@@ -18,7 +18,7 @@ import eink.yitoa.utils.EinkRefreshMode;
  */
 
 public abstract class BaseView implements IView {
-    protected Activity activity;
+    protected FragmentActivity activity;
     private int refreshNum = 1;//加刷新，如果一个界面连刷5次，则需要全刷一次
 
     private View rootView;
@@ -49,7 +49,7 @@ public abstract class BaseView implements IView {
         rootView = null;
     }
 
-    public abstract void setActivityContext(Activity activity);
+    public abstract void setActivityContext(FragmentActivity activity);
 
     @SuppressWarnings("unchecked")
     protected final <T extends View> T bindView(@IdRes int id) {
@@ -62,7 +62,7 @@ public abstract class BaseView implements IView {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Activity> T getActivity() {
+    public <T extends FragmentActivity> T getActivity() {
         return (T) rootView.getContext();
     }
 

@@ -1,8 +1,6 @@
 package eink.yitoa.utils.common;
 
-import android.annotation.SuppressLint;
 import android.app.Application;
-import android.util.Log;
 
 public class ApplicationUtils {
 

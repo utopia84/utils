@@ -2,6 +2,7 @@ package com.zjmy.mvp.layout;
 
 import android.app.Activity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.SparseArray;
 
 public final class AutoSize {
@@ -15,43 +16,29 @@ public final class AutoSize {
         throw new IllegalStateException("you can't instantiate me!");
     }
 
-
     public static void autoConvertDensityOfGlobal(Activity activity) {
-        AutoSizeConfig config = AutoSizeConfig.getInstance();
-        if (config.getInitDensity() != -1) {//代表已开启屏幕适配
-            if (config.isBaseOnWidth()) {//以宽度为基准进行适配
-                autoConvertDensity(activity, config.getDesignWidthInDp(), true);
-            } else {//以高度为基准进行适配
-                autoConvertDensity(activity, config.getDesignHeightInDp(), false);
-            }
+        if (AutoSizeConfig.getInstance().mInitDensity != -1) {//代表已开启屏幕适配
+            autoConvertDensity(activity);
         }
     }
 
     /**
-     * 使用今日头条适配方案的核心代码, 核心在于根据当前设备的实际情况做自动计算并转换 {@link DisplayMetrics#density}、
+     * 参考今日头条适配方案的核心代码, 核心在于根据当前设备的实际情况做自动计算并转换 {@link DisplayMetrics#density}、
      * {@link DisplayMetrics#scaledDensity}、{@link DisplayMetrics#densityDpi} 这三个值
-     *
      * @param activity      {@link Activity}
-     * @param sizeInDp      设计图上的设计尺寸, 单位 dp, 如果 {@param isBaseOnWidth} 设置为 {@code true},
-     *                      {@param sizeInDp} 则应该填写设计图的总宽度, 如果 {@param isBaseOnWidth} 设置为 {@code false},
-     *                      {@param sizeInDp} 则应该填写设计图的总高度
-     * @param isBaseOnWidth 是否按照宽度进行等比例适配, {@code true} 为以宽度进行等比例适配, {@code false} 为以高度进行等比例适配
-     * @see <a href="https://mp.weixin.qq.com/s/d9QCoBP6kV9VSWvVldVVwA">今日头条官方适配方案</a>
+     * @see <a href="https://mp.weixin.qq.com/s/d9QCoBP6kV9VSWvVldVVwA">参考今日头条官方适配方案</a>
      */
-    public static void autoConvertDensity(Activity activity, float sizeInDp, boolean isBaseOnWidth) {
+    public static void autoConvertDensity(Activity activity) {
         Preconditions.checkNotNull(activity, "activity == null");
         Preconditions.checkMainThread();
 
-        float subunitsDesignSize = isBaseOnWidth ? AutoSizeConfig.getInstance().getDesignWidthInDp()
-                : AutoSizeConfig.getInstance().getDesignHeightInDp();
-        subunitsDesignSize = subunitsDesignSize > 0 ? subunitsDesignSize : sizeInDp;
+        AutoSizeConfig config = AutoSizeConfig.getInstance();
+        //是否按照宽度进行等比例适配, {@code true} 为以宽度进行等比例适配, {@code false} 为以高度进行等比例适配
+        float designSizeInDp = config.isBaseOnWidth ? config.mDesignWidthInDp : config.mDesignHeightInDp;
 
-        int screenSize = isBaseOnWidth ? AutoSizeConfig.getInstance().getScreenWidth()
-                : AutoSizeConfig.getInstance().getScreenHeight();
-
-        int key = Math.round((sizeInDp + subunitsDesignSize + screenSize) * AutoSizeConfig.getInstance().getInitScaledDensity()) & ~MODE_MASK;
-        key = isBaseOnWidth ? (key | MODE_ON_WIDTH) : (key & ~MODE_ON_WIDTH);
-        key = AutoSizeConfig.getInstance().isUseDeviceSize() ? (key | MODE_DEVICE_SIZE) : (key & ~MODE_DEVICE_SIZE);
+        int key = (int)designSizeInDp & ~MODE_MASK;// 基础key值
+        key = config.isBaseOnWidth ? (key | MODE_ON_WIDTH) : (key & ~MODE_ON_WIDTH);   //横竖屏规则变换，需要重新计算，2
+        key = config.isBaseOnWidth ? (key | MODE_DEVICE_SIZE) : (key & ~MODE_DEVICE_SIZE);//状态栏是否计入，需要重新计算,2
 
         DisplayMetricsInfo displayMetricsInfo = mCache.get(key);
 
@@ -60,24 +47,27 @@ public final class AutoSize {
         float targetScaledDensity ;
 
         if (displayMetricsInfo == null) {
-            if (isBaseOnWidth) {
-                targetDensity = AutoSizeConfig.getInstance().getScreenWidth() * 1.0f / sizeInDp;
+            if (config.isBaseOnWidth) {
+                targetDensity = config.getScreenWidth() * 1.0f / designSizeInDp;
             } else {
-                targetDensity = AutoSizeConfig.getInstance().getScreenHeight() * 1.0f / sizeInDp;
+                targetDensity = config.getScreenHeight() * 1.0f / designSizeInDp;
             }
 
-            float systemFontScale =  AutoSizeConfig.getInstance().
-                    getInitScaledDensity() * 1.0f / AutoSizeConfig.getInstance().getInitDensity();
-            targetScaledDensity = targetDensity * systemFontScale;
+            float systemFontScale =  config.mInitScaledDensity * 1.0f / config.mInitDensity;
 
+            targetScaledDensity = targetDensity * systemFontScale;
             targetDensityDpi = (int) (targetDensity * 160);
 
-
+            if (mCache.size() > 4){
+                mCache.clear();
+            }
             mCache.put(key, new DisplayMetricsInfo(targetDensity, targetDensityDpi, targetScaledDensity));
+            Log.e("test","displayMetricsInfo == null,mCacheSize="+mCache.size());
         } else {
             targetDensity = displayMetricsInfo.density;
             targetDensityDpi = displayMetricsInfo.densityDpi;
             targetScaledDensity = displayMetricsInfo.scaledDensity;
+            Log.e("test","displayMetricsInfo != null,mCacheSize="+mCache.size());
         }
 
         setDensity(activity, targetDensity, targetDensityDpi, targetScaledDensity);
@@ -96,7 +86,7 @@ public final class AutoSize {
         DisplayMetrics activityDisplayMetrics = activity.getResources().getDisplayMetrics();
         setDensity(activityDisplayMetrics, density, densityDpi, scaledDensity);
 
-        DisplayMetrics appDisplayMetrics = AutoSizeConfig.getInstance().getApplication().getResources().getDisplayMetrics();
+        DisplayMetrics appDisplayMetrics = activity.getApplication().getResources().getDisplayMetrics();
         setDensity(appDisplayMetrics, density, densityDpi, scaledDensity);
     }
 

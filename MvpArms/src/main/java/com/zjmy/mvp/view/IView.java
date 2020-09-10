@@ -1,12 +1,14 @@
 package com.zjmy.mvp.view;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.List;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 
 /**
  * View delegate base class
@@ -47,7 +49,7 @@ public interface IView {
     /**
      * 在presenter里面返回自己的context给view层
      */
-    void setActivityContext(Activity activity);
+    void setActivityContext(FragmentActivity activity);
 
     /**
      * 在presenter销毁的时候调用,生命周期同步一下,有时候需要在view释放什么

@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import eink.yitoa.utils.EinkRefreshMode;
 import eink.yitoa.utils.SystemUtil;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -20,8 +21,10 @@ public class MainActivity extends AppCompatActivity {
         textView = findViewById(R.id.tv_content);
 
         findViewById(R.id.bt_test).setOnClickListener(v->{
-            int no = SystemUtil.getInstance().getSystemSleepImageNo();
-            textView.setText("随机数字："+no);
+            //int no = SystemUtil.getInstance().getSystemSleepImageNo();
+            //textView.setText("随机数字："+no);
+            Intent intent = new Intent(this,SecondActivity.class);
+            startActivity(intent);
         });
 
         findViewById(R.id.bt_change).setOnClickListener(v->{

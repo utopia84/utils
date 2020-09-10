@@ -31,9 +31,7 @@ deps.autolayout = 'com.zhy:autolayout:1.4.5'
 deps.alicloud_android_push = "com.aliyun.ams:alicloud-android-push:$versions.alicloud_android_push"
 
 def support = [:]
-support.annotations = "com.android.support:support-annotations:$versions.support"
 support.recyclerview = "androidx.recyclerview:recyclerview:1.0.0"
-support.v4 = "com.android.support:support-v4:$versions.support"
 support.androidXAppcompat = "androidx.appcompat:appcompat:1.2.0"
 support.androidXFragment = "androidx.fragment:fragment:1.2.5"
 support.androidXAnnotation = "androidx.annotation:annotation:1.1.0"
