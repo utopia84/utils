@@ -4,3 +4,5 @@ project.ext.setLibraryConfig project
 dependencies {
     implementation project(':network-okhttp')
 }
+
+apply from: 'bintray.gradle'

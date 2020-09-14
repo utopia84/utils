@@ -1,11 +1,8 @@
 package eink.yitoa.utils;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.PowerManager;
 import android.provider.Settings;
-import androidx.core.content.ContextCompat;
 
 public class SystemPresenter {
     private Context mContext;
@@ -79,13 +76,6 @@ public class SystemPresenter {
         }
     }
 
-    public void bringhtnessEnable(boolean enable) {
-        if(enable == true){
-            //mPowerManager.enableLight();
-        } else {
-            //mPowerManager.disableLight();
-        }
-    }
 
     public void reboot() throws SecurityException{
         mPowerManager.reboot(null);
@@ -93,13 +83,5 @@ public class SystemPresenter {
 
     public void shutdown() throws SecurityException{
         mPowerManager.shutdown(false);
-    }
-
-    /**
-     * 检测是否有读写设置权限
-     */
-    public boolean canWriteSettingPermission() {
-        return ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_SETTINGS) !=
-                PackageManager.PERMISSION_DENIED;
     }
 }

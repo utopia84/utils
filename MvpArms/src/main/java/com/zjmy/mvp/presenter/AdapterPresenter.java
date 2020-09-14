@@ -1,10 +1,9 @@
 package com.zjmy.mvp.presenter;
 
-
 import android.content.Context;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-import com.jakewharton.rxbinding.view.RxView;
 import com.zjmy.mvp.listener.OnItemChildClickListener;
 import com.zjmy.mvp.listener.OnItemClickListener;
 import com.zjmy.mvp.view.BaseViewHolder;
@@ -23,6 +22,8 @@ import androidx.recyclerview.widget.RecyclerView;
  * 由于这个适配器并不提供添加header和foot的功能，所以getItemCount()最好还是要开发者自己实现
  */
 public abstract class AdapterPresenter<M> extends RecyclerView.Adapter<BaseViewHolder> {
+    private static double DOUBLE_CLICK_TIME = 0L;//防止按键抖动
+    private static double DOUBLE_CLICK_THROLLTE_SECONDS = 1L;
     protected Context mContext;
     //item数据的model集合
     protected List<M> mDatas;
@@ -112,28 +113,19 @@ public abstract class AdapterPresenter<M> extends RecyclerView.Adapter<BaseViewH
     public void onBindViewHolder(final BaseViewHolder holder, final int position) {
         holder.setData(getItem(position));
 
-        //设置监听接口
-        if (onItemClickListener != null) {
-            RxView.clicks(holder.itemView)
-                    .throttleFirst(1L, TimeUnit.SECONDS)
-                    .subscribe(aVoid -> {
-                        onItemClickListener.onClick(holder, position);
-                    });
-            holder.itemView.setOnLongClickListener(v -> {
-                onItemClickListener.onLongClick(holder, position);
-                return true;
-            });
-        }
+        setListener(holder,position);
     }
 
     protected void setListener(BaseViewHolder holder, int position){
         //设置监听接口
         if (onItemClickListener != null) {
-            RxView.clicks(holder.itemView)
-                    .throttleFirst(1L, TimeUnit.SECONDS)
-                    .subscribe(aVoid -> {
-                        onItemClickListener.onClick(holder, position);
-                    });
+            holder.itemView.setOnClickListener(v->{
+                if ((System.currentTimeMillis() - DOUBLE_CLICK_TIME) > DOUBLE_CLICK_THROLLTE_SECONDS) {//这里测试1500ms比较合适
+                    DOUBLE_CLICK_TIME = System.currentTimeMillis();
+                    onItemClickListener.onClick(holder, position);
+                }
+            });
+
             holder.itemView.setOnLongClickListener(v -> {
                 onItemClickListener.onLongClick(holder, position);
                 return true;

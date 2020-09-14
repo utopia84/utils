@@ -3,10 +3,12 @@ package com.utopia.upload.upload.base;
 import com.bjzjmy.network.OkHttpManager;
 import com.utopia.upload.callback.FileUploadListener;
 import com.utopia.upload.upload.ProgressRequestBody;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
@@ -41,14 +43,14 @@ public abstract class BaseUploadRequest {
         Request realRequest = requestBuilder.build();
         OkHttpManager.getInstance().getOkHttpClient().newCall(realRequest).enqueue(new Callback() {
             @Override
-            public void onFailure(@NonNull Call call,@NonNull IOException e) {
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 if (callback != null) {
                     callback.onError(e.toString());
                 }
             }
 
             @Override
-            public void onResponse(@NonNull Call call,@NonNull  Response response) {
+            public void onResponse(@NotNull Call call,@NotNull  Response response) {
                 if (response.isSuccessful() && callback != null) {
                     callback.onFinish("upload success!");
                 }

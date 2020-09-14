@@ -1,0 +1,4 @@
+apply from: "${rootProject.rootDir}/common_config.gradle"
+project.ext.setLibraryConfig project
+
+apply from: 'bintray.gradle'

@@ -7,7 +7,7 @@ project.ext {
             extension.apply plugin: 'com.android.application'
             extension.description "app"
             setAndroidConfig extension.android
-            setDependencies extension.dependencies
+            //setDependencies extension.dependencies
     }
 
     //设置LibDefault默认配置
@@ -18,6 +18,7 @@ project.ext {
             setAndroidConfig extension.android
             setDependencies extension.dependencies
     }
+
 
     //设置Android配置
     setAndroidConfig = {
@@ -55,14 +56,12 @@ project.ext {
             extension.testImplementation deps.support.junit
 
             //基础sdk
-            extension.implementation deps.support.androidXAppcompat
-            extension.implementation deps.support.androidXAnnotation
-            extension.implementation deps.support.androidXFragment
-            extension.implementation deps.support.recyclerview
+            //extension.implementation deps.support.androidXAppcompat
+            //extension.implementation deps.support.recyclerview
 
             //rx框架
-            extension.implementation deps.rxjava2
-            extension.implementation deps.rx_android
-            extension.implementation deps.rxbinding
+            //extension.implementation deps.rxjava2
+            //extension.implementation deps.rx_android
+            //extension.implementation deps.rxbinding
     }
 }

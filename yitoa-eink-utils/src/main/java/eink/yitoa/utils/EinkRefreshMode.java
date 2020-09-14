@@ -2,7 +2,6 @@ package eink.yitoa.utils;
 
 import android.annotation.SuppressLint;
 import android.view.View;
-import java.lang.reflect.Method;
 
 import eink.yitoa.utils.common.ReflectUtils;
 

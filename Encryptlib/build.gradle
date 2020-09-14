@@ -1,0 +1,26 @@
+apply from: "${rootProject.rootDir}/common_config.gradle"
+project.ext.setLibraryConfig project
+
+android {
+    defaultConfig {
+        externalNativeBuild {
+            cmake {
+                cppFlags "-frtti -fexceptions"
+            }
+        }
+
+        ndk {
+            abiFilters 'armeabi-v7a'
+        }
+
+    }
+
+    // 选择1  会使用 obfuscator 混淆native code
+    externalNativeBuild {
+        ndkBuild {
+            path file("src/main/jni/Android.mk")
+        }
+    }
+}
+
+apply from: 'bintray.gradle'

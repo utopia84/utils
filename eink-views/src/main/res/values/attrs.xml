@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <attr name="title" format="string" />
+
+    <!-- 带图标的单行输入框 -->
+    <declare-styleable name="IconTextField">
+        <attr name="rightIcon" format="reference" /><!--右侧图标 -->
+        <attr name="clearIconEnable" format="boolean" /><!-- 是否显示清除按钮 -->
+    </declare-styleable>
+
+    <declare-styleable name="StatusTitleView">
+        <attr name="title"/>
+    </declare-styleable>
+
+    <declare-styleable name="ProgressView">
+        <attr name="text1" format="string" />
+        <attr name="text2" format="string" />
+        <attr name="text3" format="string" />
+        <attr name="textsize" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="RatingStarView">
+        <attr name="starMargin" format="integer|dimension" />
+        <attr name="cornerRadius" format="float|dimension" />
+        <attr name="starForegroundColor" format="color|reference" />
+        <attr name="starBackgroundColor" format="color|reference" />
+        <attr name="strokeColor" format="color|reference" />
+        <attr name="strokeWidth" format="float|dimension" />
+        <attr name="starNum" format="integer" />
+        <attr name="rating" format="float" />
+        <attr name="isCenter" format="boolean" />
+        <attr name="starThickness" format="float|fraction" />
+        <attr name="drawStrokeForEmptyStar" format="boolean" />
+        <attr name="drawStrokeForFullStar" format="boolean" />
+        <attr name="drawStrokeForHalfStar" format="boolean" />
+        <attr name="enableSelectRating" format="boolean" />
+        <attr name="onlyHalfStar" format="boolean" />
+    </declare-styleable>
+
+    <!-- UICRoundImageView -->
+    <declare-styleable name="UICRoundImageView">
+        <attr name="border_color" format="color" />
+        <attr name="border_width" format="dimension" />
+        <attr name="radius" format="dimension" />
+        <attr name="shape_type" format="enum">
+            <enum name="none" value="0" />
+            <enum name="round" value="1" />
+            <enum name="rectangle" value="2" />
+        </attr>
+    </declare-styleable>
+
+
+    <!-- TitleHRecyclerView -->
+    <declare-styleable name="TitleHRecyclerView">
+        <attr name="title"/>
+        <attr name="moreTxt" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="FlowLayout">
+        <attr name="maxline" format="integer"/>
+    </declare-styleable>
+
+    <declare-styleable name="CircleImageView">
+        <attr name="civ_border_width" format="dimension" />
+        <attr name="civ_border_color" format="color" />
+        <attr name="civ_border_overlay" format="boolean" />
+        <attr name="civ_circle_background_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="RatingBar">
+        <!--尺寸值-->
+        <attr name="starImageSize" format="dimension" />
+        <!--星星间距-->
+        <attr name="starPadding" format="dimension" />
+        <!--星星总数-->
+        <attr name="starCount" format="integer" />
+        <!--空白的星星资源文件值-->
+        <attr name="starEmpty" format="reference" />
+        <!--满星资源文件值-->
+        <attr name="starFill" format="reference" />
+        <!--半星资源文件值-->
+        <attr name="starHalf" format="reference" />
+        <!--是否可点击boolean值-->
+        <attr name="clickable" format="boolean" />
+        <!--当前进度float值-->
+        <attr name="starStep" format="float" />
+        <!--每次进度方式的值，整星还是半星-->
+        <attr name="stepSize">
+            <enum name="Half" value="0" />
+            <enum name="Full" value="1" />
+        </attr>
+    </declare-styleable>
+</resources>

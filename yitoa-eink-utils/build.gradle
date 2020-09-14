@@ -1,11 +1,16 @@
-apply from: "${rootProject.rootDir}/common_config.gradle"
-project.ext.setLibraryConfig project
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 26
 
     defaultConfig {
         targetSdkVersion 26
+        minSdkVersion build_versions.minSdkVersion
+
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
     }
 
 }

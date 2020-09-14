@@ -5,8 +5,9 @@ android {
 }
 
 dependencies {
-    implementation 'com.zjmy:yitoa-eink-utils:1.0.3'
-    //implementation project(path: ':yitoa-eink-utils')
+    implementation 'com.zjmy:yitoa-eink-utils:1.0.4'
+    implementation deps.support.androidXAppcompat
+    implementation deps.support.recyclerview
 }
 
 apply from: 'bintray.gradle'

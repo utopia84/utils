@@ -2,10 +2,11 @@ package com.utopia.upload.upload;
 
 import com.utopia.upload.callback.FileUploadListener;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Closeable;
 import java.io.IOException;
 
-import androidx.annotation.NonNull;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okio.Buffer;
@@ -34,7 +35,7 @@ public class ProgressRequestBody extends RequestBody {
     }
 
     @Override
-    public void writeTo(@NonNull BufferedSink sink) {
+    public void writeTo(@NotNull BufferedSink sink) {
         CountingSink countingSink = null;
         BufferedSink bufferedSink = null;
         try {

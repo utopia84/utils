@@ -5,12 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.jakewharton.rxbinding.view.RxView;
 import com.zjmy.mvp.presenter.AdapterPresenter;
-
 import java.util.concurrent.TimeUnit;
-
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
  * 这个中间的base层用来做到viewholder与adapter的解耦。
  */
 public abstract class BaseViewHolder<M> extends RecyclerView.ViewHolder {
+    private static double DOUBLE_CLICK_TIME = 0L;//防止按键抖动
+    private static double DOUBLE_CLICK_THROLLTE_SECONDS = 1L;
     public int mType;//item的类型
     public View view;
 
@@ -76,13 +74,16 @@ public abstract class BaseViewHolder<M> extends RecyclerView.ViewHolder {
             view.setClickable(true);
         }
 
-        RxView.clicks(view)
-                .throttleFirst(2L, TimeUnit.SECONDS)
-                .subscribe(aVoid -> {
-                    if (adapter != null && adapter.getOnItemChildClickListener() != null) {
-                        adapter.getOnItemChildClickListener().onItemChildClick(adapter, view, getLayoutPosition());
-                    }
-                });
+        view.setOnClickListener(v->{
+            if ((System.currentTimeMillis() - DOUBLE_CLICK_TIME) > DOUBLE_CLICK_THROLLTE_SECONDS) {//这里测试1500ms比较合适
+                DOUBLE_CLICK_TIME = System.currentTimeMillis();
+                if (adapter != null && adapter.getOnItemChildClickListener() != null) {
+                    adapter.getOnItemChildClickListener().onItemChildClick(adapter, view, getLayoutPosition());
+                }
+
+            }
+        });
+
         return this;
     }
 

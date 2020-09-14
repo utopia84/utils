@@ -1,0 +1,9 @@
+apply from: "${rootProject.rootDir}/common_config.gradle"
+project.ext.setLibraryConfig project
+
+dependencies {
+    implementation deps.dom4j
+    implementation 'com.jakewharton:disklrucache:2.0.2'
+}
+
+apply from: 'bintray.gradle'

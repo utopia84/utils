@@ -5,3 +5,5 @@ dependencies {
     api deps.okhttp3.okhttp
     implementation deps.okhttp3.logging_interceptor
 }
+
+apply from: 'bintray.gradle'

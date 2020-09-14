@@ -1,6 +1,15 @@
-include ':network-okhttp'//include ':utils'
+include ':lib'
 include ':app'
-include ':module_logan'
-include ':module_upload'
+//include ':eink-views'
+//include ':common-utils'//
+//include ':network-okhttp'
+//include ':module_logan'
+//include ':module_upload'
 //include ':MvpArms'
 //include ':yitoa-eink-utils'
+//include ':Encryptlib'
+//include ':FingerLibrary'
+
+//include ':EpubParser'
+//include ':HtmlParser'
+include ':audioplayer'

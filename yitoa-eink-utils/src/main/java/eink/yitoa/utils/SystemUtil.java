@@ -1,7 +1,6 @@
 package eink.yitoa.utils;
 
 import android.annotation.SuppressLint;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,19 +17,16 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import eink.yitoa.utils.common.ApplicationUtils;
-import eink.yitoa.utils.common.ReflectUtils;
 
 public class SystemUtil {
     private Context mContext;
 
-    private static final String FILENAME_MSV = "/sys/board_properties/soc/msv";
     private static final String FILENAME_PROC_VERSION = "/proc/version";
     private static final String LOG_TAG = "SystemUtil";
     private static final String YITOA_PRODUCT_SN = "yitoa.product.sn";
@@ -69,10 +65,11 @@ public class SystemUtil {
     private SystemPresenter mSystemPresenter;
     @SuppressLint("StaticFieldLeak")
     private volatile static SystemUtil systemUtil;
-    public static SystemUtil getInstance(){
-        if (systemUtil == null){
-            synchronized (SystemUtil.class){
-                if (systemUtil == null){
+
+    public static SystemUtil getInstance() {
+        if (systemUtil == null) {
+            synchronized (SystemUtil.class) {
+                if (systemUtil == null) {
                     systemUtil = new SystemUtil(ApplicationUtils.getApplication());
                 }
             }
@@ -134,31 +131,6 @@ public class SystemUtil {
         }
     }
 
-    /**
-     * Returns " (ENGINEERING)" if the msv file has a zero value, else returns
-     * "".
-     *
-     * @return a string to append to the model number description.
-     */
-    private String getMsvSuffix() {
-        // Production devices should have a non-zero value. If we can't read it,
-        // assume it's a
-        // production device so that we don't accidentally show that it's an
-        // ENGINEERING device.
-        try {
-            String msv = readLine(FILENAME_MSV);
-            // Parse as a hex number. If it evaluates to a zero, then it's an
-            // engineering build.
-            if (Long.parseLong(msv, 16) == 0) {
-                return " (ENGINEERING)";
-            }
-        } catch (IOException ioe) {
-            // Fail quietly, as the file may not exist on some devices.
-        } catch (NumberFormatException nfe) {
-            // Fail quietly, returning empty string should be sufficient
-        }
-        return "";
-    }
 
     /**
      * Reads a line from the specified file.
@@ -178,44 +150,22 @@ public class SystemUtil {
     }
 
     public String getSystemProperty(String key) {
-        if (mSystemPresenter.canWriteSettingPermission()) {
-            return SystemProperties.get(key);
-        }
-        return "";
+        return SystemProperties.get(key);
     }
 
-    /**
-     * set AirplaneMode
-     *
-     * @param enable true is airplane open, false is airplane close
-     */
-    public void setAirplaneMode(boolean enable) {
-        Settings.Global.putInt(mContext.getContentResolver(),
-                Settings.Global.AIRPLANE_MODE_ON, enable ? 1 : 0);
-        Intent intent = new Intent(Intent.ACTION_AIRPLANE_MODE_CHANGED);
-        intent.putExtra("state", enable);
-        mContext.sendBroadcast(intent);
-    }
 
-    /*
-     *
-     */
     private void initBringhtness() {
         int level = mSystemPresenter.initBringhtness_level();
-        Log.e("test","level1:"+level);
-        if (level >= 0 && level < 30) {
-        } else {
+        if (level < 0 || level >= 30) {
             level = 0;
         }
 
-        if (mSystemPresenter.canWriteSettingPermission()) {
-            try {
-                mSystemPresenter.setBringhtness(level);
-                Settings.System.putInt(mContext.getContentResolver(),
-                        Settings.System.SYS_BRIGHTNESS_LEVEL, level);
-            } catch (Exception e) {
-                //e.printStackTrace();
-            }
+        try {
+            mSystemPresenter.setBringhtness(level);
+            Settings.System.putInt(mContext.getContentResolver(),
+                    Settings.System.SYS_BRIGHTNESS_LEVEL, level);
+        } catch (Exception e) {
+            //e.printStackTrace();
         }
     }
 
@@ -225,64 +175,43 @@ public class SystemUtil {
     public void setBringhtness(int bringhtness_level) {
         try {
             if (bringhtness_level >= 0 && bringhtness_level < 30) {
-                if (mSystemPresenter.canWriteSettingPermission()) {
-                    mSystemPresenter.setBringhtness(bringhtness_level);
-                    Settings.System.putInt(mContext.getContentResolver(),
-                            Settings.System.SYS_BRIGHTNESS_LEVEL, bringhtness_level);
-                }
+                mSystemPresenter.setBringhtness(bringhtness_level);
+                Settings.System.putInt(mContext.getContentResolver(),
+                        Settings.System.SYS_BRIGHTNESS_LEVEL, bringhtness_level);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    /*
-     *
-     */
     public int getBringhtness() {
         return mSystemPresenter.initBringhtness_level();
     }
 
-    /*
-     *
-     */
-    public void bringhtnessEnable(boolean enable) {
-        mSystemPresenter.bringhtnessEnable(enable);
-    }
 
-
-    /*
-     *	reboot device
-     */
     public void reboot() {
-
-        Intent BOOXintent = new Intent("onyx.android.show.global.dialog");
-        BOOXintent.putExtra("FORCE_REBOOT", true);
-        mContext.sendBroadcast(BOOXintent);
-
         try {
-            //mSystemPresenter.reboot();
+            Intent BOOXintent = new Intent("onyx.android.show.global.dialog");
+            BOOXintent.putExtra("FORCE_REBOOT", true);
+            mContext.sendBroadcast(BOOXintent);
+
+
             Intent intent = new Intent(Intent.ACTION_REBOOT);
             intent.putExtra("nowait", 1);
             intent.putExtra("interval", 1);
             intent.putExtra("window", 0);
             mContext.sendBroadcast(intent);
         } catch (Exception e) {
-            Toast.makeText(mContext, "无法执行相关操作，缺少权限！", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "无法执行重启操作，缺少系统权限！", Toast.LENGTH_SHORT).show();
         }
     }
 
-    /*
-     *	shutdown device
-     */
-
     public void shutdown() {
-
-        Intent BOOXintent = new Intent("onyx.android.show.global.dialog");
-        BOOXintent.putExtra("FORCE_SHUTDOWN", true);
-        mContext.sendBroadcast(BOOXintent);
-
         try {
+            Intent BOOXintent = new Intent("onyx.android.show.global.dialog");
+            BOOXintent.putExtra("FORCE_SHUTDOWN", true);
+            mContext.sendBroadcast(BOOXintent);
+
             Intent intent = new Intent("com.android.internal.intent.action.REQUEST_SHUTDOWN");
             intent.putExtra("android.intent.extra.KEY_CONFIRM", false);
             //其中false换成true,会弹出是否关机的确认窗口
@@ -292,30 +221,26 @@ public class SystemUtil {
             mSystemPresenter.shutdown();
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(mContext, "无法执行相关操作，缺少权限！", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "无法执行关机操作，缺少系统权限！", Toast.LENGTH_SHORT).show();
         }
     }
 
-    /*
-     *	set sleep image number
-     */
-    public void setSystemSleepImage(int imageNo) {
-        if (imageNo >= 0) {
-            if (mSystemPresenter.canWriteSettingPermission()) {
-                Settings.System.putInt(mContext.getContentResolver(),
-                        Settings.System.SYS_SLEEP_IMAGE, imageNo);
-            }
 
-            if ("C68".equals(android.os.Build.MODEL) || "C68".equals(android.os.Build.PRODUCT)) {
-                try {
+    public void setSystemSleepImage(int imageNo) {
+        try {
+            if (imageNo >= 0) {
+                Settings.System.putInt(mContext.getContentResolver(), Settings.System.SYS_SLEEP_IMAGE, imageNo);
+
+                if ("C68".equals(android.os.Build.MODEL) || "C68".equals(android.os.Build.PRODUCT)) {
                     String fileName = "standby-" + imageNo + ".png";
                     InputStream in = mContext.getResources().getAssets().open(fileName);
                     Bitmap imageBitmap = BitmapFactory.decodeStream(in);
                     SleepImageUtils.setSleepImage(mContext, imageBitmap, fileName);
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(mContext, "无法执行相关操作，缺少系统权限！", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -323,31 +248,27 @@ public class SystemUtil {
      *	set sleep image number
      */
     public void setSystemSleepImage(String fileName) {
-        if (!TextUtils.isEmpty(fileName)) {
-            Matcher m = Pattern.compile("[^0-9]").matcher(fileName);
-            String strNo = m.replaceAll("").trim();
-            int imageNo = Integer.valueOf(strNo) - 1;
-            if (mSystemPresenter.canWriteSettingPermission()) {
-                Settings.System.putInt(mContext.getContentResolver(),
-                        Settings.System.SYS_SLEEP_IMAGE, imageNo);
-            }
+        try {
+            if (!TextUtils.isEmpty(fileName)) {
+                Matcher m = Pattern.compile("[^0-9]").matcher(fileName);
+                String strNo = m.replaceAll("").trim();
+                int imageNo = Integer.parseInt(strNo) - 1;
+                Settings.System.putInt(mContext.getContentResolver(), Settings.System.SYS_SLEEP_IMAGE, imageNo);
 
-            if ("C68".equals(android.os.Build.MODEL) || "C68".equals(android.os.Build.PRODUCT)) {
-                try {
+                if ("C68".equals(android.os.Build.MODEL) || "C68".equals(android.os.Build.PRODUCT)) {
                     String sleepFileName = "standby-" + imageNo + ".png";
                     InputStream in = mContext.getResources().getAssets().open(sleepFileName);
                     Bitmap imageBitmap = BitmapFactory.decodeStream(in);
                     SleepImageUtils.setSleepImage(mContext, imageBitmap, sleepFileName);
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(mContext, "无法执行相关操作，缺少系统权限！", Toast.LENGTH_SHORT).show();
         }
     }
 
-    /*
-     *	get sleep image number
-     */
+
     public int getSystemSleepImageNo() {
         int imageno = 0;
         try {
@@ -360,34 +281,28 @@ public class SystemUtil {
     }
 
 
-    /*
-     *	get sleep image array
-     */
     public int[] getSleepImageArray() {
         return sleepImageArray;
     }
 
 
-    /*
-     *	get sleep image array
-     */
     public String[] getSleepImageArrayEx() {
         return sleepImageArrayEx;
     }
 
-    /*
-     *	set shutdown image number
-     */
-    public void setSystemShutdownImage(String fileName) {
 
-        if (!TextUtils.isEmpty(fileName)) {
-            Matcher m = Pattern.compile("[^0-9]").matcher(fileName);
-            String strNo = m.replaceAll("").trim();
-            int imageNo = Integer.valueOf(strNo) - 1;
-            if (mSystemPresenter.canWriteSettingPermission()) {
+    public void setSystemShutdownImage(String fileName) {
+        try {
+            if (!TextUtils.isEmpty(fileName)) {
+                Matcher m = Pattern.compile("[^0-9]").matcher(fileName);
+                String strNo = m.replaceAll("").trim();
+                int imageNo = Integer.parseInt(strNo) - 1;
                 Settings.System.putInt(mContext.getContentResolver(),
                         Settings.System.SYS_SHUTDOWN_IMAGE, imageNo);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(mContext, "无法执行相关操作，缺少系统权限！", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -396,17 +311,18 @@ public class SystemUtil {
      *	set shutdown image number
      */
     public void setSystemShutdownImage(int imageNo) {
-        if (imageNo >= 0 && imageNo < 4) {
-            if (mSystemPresenter.canWriteSettingPermission()) {
+        try {
+            if (imageNo >= 0 && imageNo < 4) {
                 Settings.System.putInt(mContext.getContentResolver(),
                         Settings.System.SYS_SHUTDOWN_IMAGE, imageNo);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(mContext, "无法执行相关操作，缺少系统权限！", Toast.LENGTH_SHORT).show();
         }
     }
 
-    /*
-     *	get shutdown image number
-     */
+
     public int getSystemShutdownImageNo() {
         int imageno = 0;
         try {
@@ -440,26 +356,24 @@ public class SystemUtil {
      */
     public void setScreenOffTime(long second) {
         try {
-            if (mSystemPresenter.canWriteSettingPermission()) {
-                Settings.System.putLong(mContext.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, second == -1 ? -1 : second * 1000);
-                if (second != -1){
-                    saveTime(second * 1000);
-                }
+            Settings.System.putLong(mContext.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, second == -1 ? -1 : second * 1000);
+            if (second != -1) {
+                saveTime(second * 1000);
             }
         } catch (Exception e) {
             e.printStackTrace();
+            Toast.makeText(mContext, "无法执行相关操作，缺少系统权限！", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void saveTime(long second){
-        Log.e("test","second:"+second);
+    private void saveTime(long second) {
         SharedPreferences sp = mContext.getSharedPreferences("system", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
-        editor.putLong("screenOffSecond",second);
+        editor.putLong("screenOffSecond", second);
         editor.apply();
     }
 
-    public void initScreenOffTime(){
+    public void initScreenOffTime() {
         long time = getScreenOffTime();
         if (time <= 0) {
             SharedPreferences sp = mContext.getSharedPreferences("system", Context.MODE_PRIVATE);
@@ -467,18 +381,20 @@ public class SystemUtil {
             setScreenOffTime(time);
         }
     }
-    /*
-     *	set screen off time
-     */
+
+
     public int getScreenOffTime() {
-        long time;
-
-        time = Settings.System.getLong(mContext.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, -1);
-        if (time != -1)
-            time /= 1000;
-
-        Log.e("test","time:"+time);
-        return (int) time;
+        long time = -1;
+        try {
+            time = Settings.System.getLong(mContext.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, time);
+            if (time != -1) {
+                time /= 1000;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(mContext, "无法执行相关操作，缺少系统权限！", Toast.LENGTH_SHORT).show();
+        }
+        return -1;
     }
 
     /*
@@ -508,7 +424,7 @@ public class SystemUtil {
      *	getSystemInfo
      */
     public Map<String, String> getSystemInfo() {
-        Map map = new HashMap();
+        Map<String,String> map = new HashMap<>();
         String sn = SystemProperties.get(YITOA_PRODUCT_SN);
         String mode = Build.MODEL;
         String android_ver = Build.VERSION.RELEASE;
@@ -522,36 +438,38 @@ public class SystemUtil {
         return map;
     }
 
-    /*
-     *	getBluetoothFlag
-     * return 0:û������������¼�� PCBV2.2, 1:������������¼��PCBV2.2, 2:��������������¼�� PCBV2.1
-     */
+
     public int getBluetoothFlag() {
         int flag = 0;
         String have = SystemProperties.get(HAVE_BLUETOOTH);
-        if (have.equals("0"))
-            flag = 0;
-        else if (have.equals("1"))
-            flag = 1;
-        else if (have.equals("2"))
-            flag = 2;
+        switch (have) {
+            case "0":
+                flag = 0;
+                break;
+            case "1":
+                flag = 1;
+                break;
+            case "2":
+                flag = 2;
+                break;
+        }
 
         return flag;
     }
 
-    /*
-     *	getFingerprintFlag
-     * return 0:no, 1:yes
-     */
+
     public int getFingerprintFlag() {
         int flag = 1;
-        String have = SystemProperties.get(HAVE_FINGERPRINT);
-        if (have.equals("0"))
-            flag = 0;
-
+        try {
+            String have = SystemProperties.get(HAVE_FINGERPRINT);
+            if (have.equals("0")) {
+                flag = 0;
+            }
+        }catch (Exception e){
+            Toast.makeText(mContext, "无法执行相关操作，缺少系统权限！", Toast.LENGTH_SHORT).show();
+        }
         return flag;
     }
-
 
 
 }
