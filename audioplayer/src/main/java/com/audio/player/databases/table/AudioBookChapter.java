@@ -1,28 +1,25 @@
-package com.audio.player.data.db;
+package com.audio.player.databases.table;
 
-import org.litepal.annotation.Column;
-import org.litepal.crud.LitePalSupport;
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
-/**
- * @作者 邸昌顺
- * @时间 2019/3/20 17:38
- * @描述
- */
-public class AudioBookChapter extends LitePalSupport {
-
-    @Column(unique = true, defaultValue = "unknown")
+@Entity(tableName = "tb_audio_book_chapter")
+public class AudioBookChapter {
+    @PrimaryKey
+    @NonNull
     private String chapterId;
-
     private String bookId;
     private String uri;
     private String name;
-    @Column(defaultValue = "0")
     private long duration;
     private int orderNo;
 
     public AudioBookChapter() {
     }
 
+    @Ignore
     public AudioBookChapter(String chapterId, String bookId, String uri, String name, long duration, int orderNo) {
         this.chapterId = chapterId;
         this.bookId = bookId;

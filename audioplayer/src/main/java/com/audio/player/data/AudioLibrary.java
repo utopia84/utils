@@ -3,11 +3,9 @@ package com.audio.player.data;
 import android.media.MediaPlayer;
 import android.util.Log;
 
-import com.audio.player.data.db.AudioBookChapter;
+import com.audio.player.databases.DatabaseHolder;
+import com.audio.player.databases.table.AudioBookChapter;
 import com.audio.player.model.BaseSubscriber;
-
-import org.litepal.LitePal;
-
 import java.io.IOException;
 
 import rx.Observable;
@@ -15,11 +13,6 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-/**
- * @作者 邸昌顺
- * @时间 2019/3/18 13:46
- * @描述 处理音频数据
- */
 public class AudioLibrary {
 
     public interface Callback{
@@ -32,13 +25,13 @@ public class AudioLibrary {
         return "root_eink";//随便定义
     }
 
-    public static void notifyAudioDuration(String mediaId, long duration, Callback callback){
+    public static void notifyAudioDuration(String chapterId, long duration, Callback callback){
         Observable.create((Subscriber<? super AudioBookChapter> subscriber) -> {
-                    AudioBookChapter chapter = LitePal.where("chapterId=?", mediaId).findFirst(AudioBookChapter.class);
+                    AudioBookChapter chapter = DatabaseHolder.getInstance().chapterDao().findFirst(chapterId);
                     if(chapter != null){
                         Log.e("test", "duration=" + chapter.getDuration() + ", " + duration);
                         chapter.setDuration(duration);
-                        chapter.saveOrUpdate("chapterId=?", mediaId);
+                        DatabaseHolder.getInstance().chapterDao().update(chapter);
                         curDuration = chapter.getDuration();
                         subscriber.onNext(chapter);
                     }
@@ -62,12 +55,13 @@ public class AudioLibrary {
     public static void getAudioDuration(String chapterId, Callback callback){
         Observable.create((Subscriber<? super AudioBookChapter> subscriber) -> {
 
-                AudioBookChapter chapterTemp = LitePal.where("chapterId=?", chapterId).findFirst(AudioBookChapter.class);
+                AudioBookChapter chapterTemp = DatabaseHolder.getInstance().chapterDao().findFirst(chapterId);
+                //LitePal.where("chapterId=?", chapterId).findFirst(AudioBookChapter.class);
                     if(chapterTemp != null){
                         if(chapterTemp.getDuration() == 0){
                             long duration = getAudioDurationByUrl(chapterTemp.getUri());
                             chapterTemp.setDuration(duration);
-                            chapterTemp.saveOrUpdate("chapterId=?", chapterTemp.getChapterId());
+                            DatabaseHolder.getInstance().chapterDao().update(chapterTemp);
                         }
                         curDuration = chapterTemp.getDuration();
                         subscriber.onNext(chapterTemp);

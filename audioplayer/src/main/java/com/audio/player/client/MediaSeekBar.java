@@ -1,23 +1,15 @@
 package com.audio.player.client;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.SeekBar;
 
 import com.audio.player.data.AudioLibrary;
 import com.audio.player.data.PlaySPUtils;
-import com.audio.player.data.db.AudioBookChapter;
 import com.audio.player.listener.SeekBarEventBus;
-import com.audio.player.util.TimeCountUtil;
-
-import org.litepal.LitePal;
 
 public class MediaSeekBar extends SeekBar {
 

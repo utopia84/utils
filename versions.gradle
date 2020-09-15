@@ -21,10 +21,10 @@ versions.okhttp = "4.8.1"
 versions.logging_interceptor = "3.4.1"
 versions.eventbus = "3.1.1"
 versions.alicloud_android_push = "3.1.9.1"
+versions.room_version = "2.2.5"
 ext.versions = versions
 
 def deps = [:]
-deps.autolayout = 'com.zhy:autolayout:1.4.5'
 deps.alicloud_android_push = "com.aliyun.ams:alicloud-android-push:$versions.alicloud_android_push"
 
 def support = [:]
@@ -60,6 +60,9 @@ deps.objectbox = objectbox
 deps.easy_recycler = "com.jude:easyrecyclerview:$versions.easy_recycler"
 deps.photo_view = "com.github.chrisbanes:PhotoView:$versions.photo_view"
 deps.material_dialog = "com.afollestad.material-dialogs:core:$versions.material_dialog"
+
+deps.room_runtime ="androidx.room:room-runtime:$versions.room_version"
+deps.room_compiler = "androidx.room:room-compiler:$versions.room_version"
 
 deps.android_gradle_plugin = "com.android.tools.build:gradle:$versions.android_gradle_plugin"
 deps.rxjava = "io.reactivex.rxjava3:rxjava:3.0.4"

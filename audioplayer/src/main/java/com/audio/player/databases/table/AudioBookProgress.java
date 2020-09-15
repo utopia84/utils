@@ -1,13 +1,13 @@
-package com.audio.player.data.db;
+package com.audio.player.databases.table;
 
-import org.litepal.crud.LitePalSupport;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
-/**
- * @作者 邸昌顺
- * @时间 2019/3/20 16:30
- * @描述
- */
-public class AudioBookProgress extends LitePalSupport {
+@Entity(tableName = "tb_audio_book_progress")
+public class AudioBookProgress{
+    @PrimaryKey(autoGenerate = true)
+    public int id;
 
     private String bookId;
     private String curChapterId;
@@ -20,9 +20,10 @@ public class AudioBookProgress extends LitePalSupport {
     private long updateTime;
 
     public AudioBookProgress() {
-        this.updateTime = System.currentTimeMillis();
+
     }
 
+    @Ignore
     public AudioBookProgress(String bookId, String curChapterId, String curChapterName, long position, long duration, boolean isSync, String userId, String audioId) {
         this.bookId = bookId;
         this.curChapterId = curChapterId;

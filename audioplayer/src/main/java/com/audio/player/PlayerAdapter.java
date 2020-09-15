@@ -5,11 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
-import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 
 import com.audio.player.util.TimeCountUtil;
+
+import androidx.annotation.NonNull;
 
 /**
  * @作者 邸昌顺

@@ -5,15 +5,15 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 
-import com.audio.player.data.db.AudioBookChapter;
+import com.audio.player.databases.AudioBookDatabase;
+import com.audio.player.databases.DatabaseHolder;
+import com.audio.player.databases.table.AudioBookChapter;
 import com.audio.player.model.BaseSubscriber;
 import com.audio.player.util.UICLog;
-
-import org.litepal.LitePal;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import eink.yitoa.utils.common.ApplicationUtils;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -48,7 +48,7 @@ public class LoadPlayData {
 
         mSub = Observable.create((Subscriber<? super List<MediaBrowserCompat.MediaItem>> subscriber) -> {
             List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
-            List<AudioBookChapter> chapters = LitePal.findAll(AudioBookChapter.class);
+            List<AudioBookChapter> chapters = DatabaseHolder.getInstance().chapterDao().loadAll();//LitePal.findAll(AudioBookChapter.class);
             for(AudioBookChapter chapter : chapters){
                 mediaItems.add(getMediaItem(chapter));
             }

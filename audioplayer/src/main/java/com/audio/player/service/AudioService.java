@@ -3,10 +3,7 @@ package com.audio.player.service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -22,6 +19,9 @@ import com.audio.player.data.PlaySPUtils;
 import com.audio.player.util.UICLog;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.media.MediaBrowserServiceCompat;
 
 /**
  * @作者 邸昌顺
@@ -73,9 +73,9 @@ public class AudioService extends MediaBrowserServiceCompat {
         UICLog.e("onDestroy: MediaPlayerAdapter stopped, and MediaSession released");
     }
 
-    @Nullable
+    @NonNull
     @Override
-    public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
+    public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @NonNull Bundle rootHints) {
         return new BrowserRoot(AudioLibrary.getRoot(), null);
     }
 

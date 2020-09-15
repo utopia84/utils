@@ -25,9 +25,13 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation deps.support.v4
-    //implementation deps.litepal
+    implementation deps.room_runtime
+    annotationProcessor deps.room_compiler
+
     implementation deps.rxbinding
     implementation deps.rxjava
     implementation deps.rxandroid
+
+    implementation 'com.zjmy:yitoa-eink-utils:1.0.4'
     //implementation project(path: ':module_common')
 }
