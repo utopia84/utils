@@ -1,37 +1,17 @@
-apply plugin: 'com.android.library'
+apply from: "${rootProject.rootDir}/common_config.gradle"
+project.ext.setLibraryConfig project
 
-android {
-    compileSdkVersion build_versions.compileSdkVersion
-    buildToolsVersion build_versions.buildToolsVersion
-
-    defaultConfig {
-        minSdkVersion build_versions.minSdkVersion
-        targetSdkVersion build_versions.targetSdkVersion
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-    compileOptions {
-        sourceCompatibility = '1.8'
-        targetCompatibility = '1.8'
-    }
-
-}
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     implementation deps.support.v4
-    implementation deps.room_runtime
-    annotationProcessor deps.room_compiler
-
-    implementation deps.rxbinding
-    implementation deps.rxjava
-    implementation deps.rxandroid
+    implementation deps.room.runtime
+    annotationProcessor deps.room.compiler
+    implementation deps.room.rxjava2
+    implementation deps.rx_android
+    implementation deps.rxjava2
 
     implementation 'com.zjmy:yitoa-eink-utils:1.0.4'
     //implementation project(path: ':module_common')
 }
+
+apply from: 'bintray.gradle'

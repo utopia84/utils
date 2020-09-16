@@ -8,11 +8,13 @@ import android.util.AttributeSet;
 import android.widget.SeekBar;
 
 import com.audio.player.data.AudioLibrary;
-import com.audio.player.data.PlaySPUtils;
+import com.audio.player.listener.Callback;
+import com.audio.player.listener.OnProgressUpdateListener;
+import com.audio.player.util.PlaySPUtils;
 import com.audio.player.listener.SeekBarEventBus;
 
-public class MediaSeekBar extends SeekBar {
-
+public class MediaSeekBar extends SeekBar implements SeekBar.OnSeekBarChangeListener {
+    private AudioLibrary audioLibrary;
     private MediaControllerCompat mMediaController;
     private ControllerCallback mControllerCallback;
 
@@ -22,42 +24,20 @@ public class MediaSeekBar extends SeekBar {
     }
 
     private boolean mIsTracking = false;
-    private OnSeekBarChangeListener mOnSeekBarChangeListener = new OnSeekBarChangeListener() {
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
-        }
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-            mIsTracking = true;
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-            PlaySPUtils.isPlayEnd = seekBar.getProgress() >= seekBar.getMax();
-            PlaySPUtils.setPlayPosition(seekBar.getProgress());
-            if(onProgressUpdateListener != null){
-                onProgressUpdateListener.onProgressUpdate(seekBar.getProgress());//注意空指针
-            }
-            mMediaController.getTransportControls().seekTo(getProgress());//重新调整了播放进度
-            mIsTracking = false;
-        }
-    };
 
     public MediaSeekBar(Context context) {
-        super(context);
-        super.setOnSeekBarChangeListener(mOnSeekBarChangeListener);
+        this(context,null);
     }
 
     public MediaSeekBar(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        super.setOnSeekBarChangeListener(mOnSeekBarChangeListener);
+        this(context, attrs,0);
     }
 
     public MediaSeekBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        super.setOnSeekBarChangeListener(mOnSeekBarChangeListener);
+        super.setOnSeekBarChangeListener(this);
+        audioLibrary = new AudioLibrary();
     }
 
     @Override
@@ -138,11 +118,10 @@ public class MediaSeekBar extends SeekBar {
             if(metadata == null){
                 return;
             }
-            AudioLibrary.getAudioDuration(metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID), new AudioLibrary.Callback() {
+            audioLibrary.getAudioDuration(metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID), new Callback<Long>() {
                 @Override
-                public <T> void next(T t) {
-                    final long max = (Long) t;
-                    setMax((int) max);
+                public void finished(Long max) {
+                    setMax(max.intValue());
                     long progress = PlaySPUtils.getPlayPosition();
                     setProgress((int) progress);
                     if(onProgressUpdateListener != null){
@@ -152,5 +131,26 @@ public class MediaSeekBar extends SeekBar {
                 }
             });
         }
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        mIsTracking = true;
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        PlaySPUtils.isPlayEnd = seekBar.getProgress() >= seekBar.getMax();
+        PlaySPUtils.setPlayPosition(seekBar.getProgress());
+        if(onProgressUpdateListener != null){
+            onProgressUpdateListener.onProgressUpdate(seekBar.getProgress());//注意空指针
+        }
+        mMediaController.getTransportControls().seekTo(getProgress());//重新调整了播放进度
+        mIsTracking = false;
     }
 }

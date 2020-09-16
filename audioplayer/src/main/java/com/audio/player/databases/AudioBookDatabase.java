@@ -14,9 +14,22 @@ import eink.yitoa.utils.common.ApplicationUtils;
 
 @Database(entities = {AudioBookProgress.class, AudioBookChapter.class},exportSchema = false, version = 1)
 public abstract class AudioBookDatabase extends RoomDatabase {
+    private static volatile AudioBookDatabase INSTANCE;
 
     public abstract AudioBookProgressDao progressDao();
-
     public abstract AudioBookChapterDao chapterDao();
 
+
+    public static AudioBookDatabase getInstance() {
+        if (INSTANCE == null) {
+            synchronized (AudioBookDatabase.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = Room.databaseBuilder(ApplicationUtils.getApplication(),
+                            AudioBookDatabase.class, DBHelper.DB_NAME)
+                            .build();
+                }
+            }
+        }
+        return INSTANCE;
+    }
 }

@@ -6,21 +6,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.support.v4.media.MediaMetadataCompat;
-import android.util.Log;
 
-import com.audio.player.util.TimeCountUtil;
-
-import androidx.annotation.NonNull;
+import eink.yitoa.utils.common.ApplicationUtils;
 
 /**
- * @作者 邸昌顺
- * @时间 2019/3/18 14:52
- * @描述 控制app音频焦点监听事件和耳机插拔事件
+ * 控制app音频焦点监听事件和耳机插拔事件
  */
-public abstract class PlayerAdapter {
-
-    private Context mApplicationContext;
-    private AudioManager mAudioManager;//音频管理器
+abstract class PlayerAdapter {
     private AudioFocusHelper mAudioFocusHelper;
 
     private boolean audioNoisyReceiverRegistered = false;
@@ -30,16 +22,14 @@ public abstract class PlayerAdapter {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
-                if (isPlaying()) {
+                if (isPlaying()) {//耳机状态改变时，暂停当前播放状态
                     pause();
                 }
             }
         }
     };
 
-    public PlayerAdapter(@NonNull Context context){
-        mApplicationContext = context.getApplicationContext();
-        mAudioManager = (AudioManager) mApplicationContext.getSystemService(Context.AUDIO_SERVICE);
+    public PlayerAdapter(){
         mAudioFocusHelper = new AudioFocusHelper();
     }
 
@@ -73,21 +63,32 @@ public abstract class PlayerAdapter {
 
     public abstract void seekTo(long position);
 
+    /**
+     * 注册耳机监听
+     */
     private void registerAudioNoisyReceiver() {
         if (!audioNoisyReceiverRegistered) {
-            mApplicationContext.registerReceiver(mAudioNoisyReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+            ApplicationUtils.getApplication().registerReceiver(mAudioNoisyReceiver,
+                    new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
             audioNoisyReceiverRegistered = true;
         }
     }
 
+    /**
+     * 取消耳机监听
+     */
     private void unregisterAudioNoisyReceiver() {
         if (audioNoisyReceiverRegistered) {
-            mApplicationContext.unregisterReceiver(mAudioNoisyReceiver);
+            ApplicationUtils.getApplication().unregisterReceiver(mAudioNoisyReceiver);
             audioNoisyReceiverRegistered = false;
         }
     }
 
     private class AudioFocusHelper implements AudioManager.OnAudioFocusChangeListener{
+        private AudioManager mAudioManager;//音频管理器
+        AudioFocusHelper(){
+            mAudioManager = (AudioManager) ApplicationUtils.getApplication().getSystemService(Context.AUDIO_SERVICE);
+        }
 
         private boolean requestAudioFocus() {
             int result = mAudioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);

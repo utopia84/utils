@@ -6,76 +6,54 @@ import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 
 import com.audio.player.databases.AudioBookDatabase;
-import com.audio.player.databases.DatabaseHolder;
 import com.audio.player.databases.table.AudioBookChapter;
-import com.audio.player.model.BaseSubscriber;
-import com.audio.player.util.UICLog;
+import com.audio.player.listener.Callback;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import eink.yitoa.utils.common.ApplicationUtils;
-import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
+
 
 /**
- * @作者 邸昌顺
- * @时间 2019/7/1 17:04
- * @描述 加载播放的数据列表, 这个数据模型只用加载一次
+ * 加载播放的数据列表, 这个数据模型只用加载一次
  */
 public class LoadPlayData {
+    private final static LoadPlayData loadPlayData = new LoadPlayData();
+    private final CompositeDisposable mDisposable = new CompositeDisposable();
 
-    private static LoadPlayData loadPlayData = new LoadPlayData();
     private LoadPlayData(){}
 
     public static LoadPlayData getDefault(){
         return loadPlayData;
     }
 
-    //数据加载完成回调
-    public interface LoadDataCallback {
+    public final void getPlayData(Callback<PlayData> callback){
+        mDisposable.add(AudioBookDatabase.getInstance().chapterDao().loadAll()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(chapters -> {
+                    List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
+                    for(AudioBookChapter chapter : chapters){
+                        mediaItems.add(getMediaItem(chapter));
+                    }
+                    callback.finished(new PlayData(mediaItems));
+                },Throwable::printStackTrace)
+        );
 
-        void completeLoad(PlayData data);
-    }
 
-    private LoadDataCallback mLoadDataCallback;
-    private Subscription mSub;
 
-    public final void goGetData(LoadDataCallback loadDataCallback){
-        this.mLoadDataCallback = loadDataCallback;
-
-        mSub = Observable.create((Subscriber<? super List<MediaBrowserCompat.MediaItem>> subscriber) -> {
-            List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
-            List<AudioBookChapter> chapters = DatabaseHolder.getInstance().chapterDao().loadAll();//LitePal.findAll(AudioBookChapter.class);
-            for(AudioBookChapter chapter : chapters){
-                mediaItems.add(getMediaItem(chapter));
-            }
-            subscriber.onNext(mediaItems);
-        })
-        .observeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new BaseSubscriber<List<MediaBrowserCompat.MediaItem>>() {
-            @Override
-            public void onNext(List<MediaBrowserCompat.MediaItem> list) {
-                mLoadDataCallback.completeLoad(new PlayData(list));
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                super.onError(e);
-                UICLog.e("onError-" + e.toString());
-            }
-        });
     }
 
     public final void release(){
-        if(mSub != null){
-            mSub.unsubscribe();
-            mSub = null;
-        }
+        mDisposable.clear();
     }
 
+    /**
+     * 生成 MediaItem
+     */
     private MediaBrowserCompat.MediaItem getMediaItem(AudioBookChapter chapter){
         Bundle extras = new Bundle();
         extras.putString(PlayData.CHAPTER_ID, chapter.getChapterId());

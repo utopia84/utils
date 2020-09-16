@@ -1,38 +1,34 @@
 package com.audio.player;
 
-import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Toast;
-
 import com.audio.player.client.MediaSeekBar;
 import com.audio.player.data.AudioLibrary;
 import com.audio.player.data.LoadPlayData;
-import com.audio.player.data.PlaySPUtils;
+import com.audio.player.listener.PlaybackInfoListener;
+import com.audio.player.util.PlaySPUtils;
 import com.audio.player.listener.SeekBarEventBus;
 import com.audio.player.util.TimeCountUtil;
-import com.audio.player.util.UICLog;
+
+import eink.yitoa.utils.common.ApplicationUtils;
 
 /**
- * @作者 邸昌顺
- * @时间 2019/3/18 15:07
- * @描述 音频播放器封装
+ * 音频播放器封装
  */
 public class MediaPlayerAdapter extends PlayerAdapter {
-
-    private Context mContext;
+    private AudioLibrary audioLibrary;
     private MediaPlayer mMediaPlayer;
     private PlaybackInfoListener mPlaybackInfoListener;
     private int mState;
 
-    public MediaPlayerAdapter(Context context) {
-        super(context);
-        mContext = context.getApplicationContext();
+    public MediaPlayerAdapter() {
+        super();
+        audioLibrary = new AudioLibrary();
     }
 
     public void setPlaybackInfoListener(PlaybackInfoListener listener) {
@@ -62,12 +58,10 @@ public class MediaPlayerAdapter extends PlayerAdapter {
     public void playFromUriByPosition(MediaMetadataCompat metadata) {
         String path = LoadPlayData.getChapterMediaPath(metadata);
         if(TextUtils.isEmpty(path)){
-            UICLog.e("Media Path Is Null, Please Check!");
             return;
         }
 
         if(mMediaPlayer == null){
-            Log.e("test","1");
             mMediaPlayer = new MediaPlayer();
             mMediaPlayer.setOnCompletionListener((MediaPlayer mediaPlayer) -> {
                 if(!PlaySPUtils.isPlayEnd && !PlaySPUtils.isPauseByUser){
@@ -76,7 +70,6 @@ public class MediaPlayerAdapter extends PlayerAdapter {
                 }
             });
             mMediaPlayer.setOnErrorListener((MediaPlayer mp, int what, int extra) -> {
-                Log.e("test","error:"+what);
                 if (mMediaPlayer != null && errorTimes==0) {
                     errorTimes = 1;
                     mMediaPlayer.pause();
@@ -88,45 +81,34 @@ public class MediaPlayerAdapter extends PlayerAdapter {
                 return true;//拦截错误
             });
         }else{
-            Log.e("test","2");
             mMediaPlayer.reset();
         }
 
         String mediaId = LoadPlayData.getChapterId(metadata);
         try {
-            Log.e("test","path:"+path);
             mMediaPlayer.setDataSource(path);
             mMediaPlayer.prepareAsync();
 
-            mMediaPlayer.setOnPreparedListener((MediaPlayer mp) -> {
-
-                AudioLibrary.notifyAudioDuration(mediaId, mMediaPlayer.getDuration(), new AudioLibrary.Callback() {
-                    @Override
-                    public <T> void next(T t) {
-                        Log.e("test","setOnPreparedListener");
+            mMediaPlayer.setOnPreparedListener((MediaPlayer mp) ->
+                    audioLibrary.updateAudioDuration(mediaId, mMediaPlayer.getDuration(), data -> {
                         if(PlaySPUtils.getPlayPosition() >= 0){
                             mMediaPlayer.seekTo((int) PlaySPUtils.getPlayPosition());
                         }
                         play();
-
                         timeCount = new TimeCountUtil();
-                        timeCount.start(()->notifyProgress());
-                    }
-                });
-            });
+                        timeCount.start(this::notifyProgress);
+                    })
+            );
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(mContext,"音频加载失败",Toast.LENGTH_SHORT).show();
+            Toast.makeText(ApplicationUtils.getApplication(),"音频加载失败",Toast.LENGTH_SHORT).show();
         }
-
-        UICLog.e("end");
     }
 
     TimeCountUtil timeCount;
 
-    private MediaSeekBar mediaSeekBar;
     private void notifyProgress() {
-        mediaSeekBar = SeekBarEventBus.getObject("seekBar");
+        MediaSeekBar mediaSeekBar = SeekBarEventBus.getObject("seekBar");
         if (mediaSeekBar != null && mMediaPlayer != null){
             mediaSeekBar.notifyProgress(mMediaPlayer.getCurrentPosition());
         }

@@ -1,23 +1,21 @@
 package com.audio.player.util;
 
-
 import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * @作者 邸昌顺
- * @时间 2019/3/20 13:23
- * @描述
+ * 计时器工具类
  */
 public final class TimeCountUtil {
-
-    public TimeCountUtil(){
-
-    }
+    private final static long PERIOD = 1000L;
 
     private Timer timer;
     private TimerTask timerTask;
 
+    /**
+     * 开启计时器
+     * @param runnable 执行线程
+     */
     public void start(final Runnable runnable){
         if(timer == null){
             timer = new Timer();
@@ -27,15 +25,21 @@ public final class TimeCountUtil {
                     runnable.run();
                 }
             };
-            timer.schedule(timerTask, 0L, 1000L);
+            timer.schedule(timerTask, 0L, PERIOD);
         }
     }
 
+    /**
+     * 结束计时器，释放资源
+     */
     public void cancel(){
         if(timerTask != null){
             timerTask.cancel();
-            timer.cancel();
             timerTask = null;
+        }
+
+        if (timer != null){
+            timer.cancel();
             timer = null;
         }
     }

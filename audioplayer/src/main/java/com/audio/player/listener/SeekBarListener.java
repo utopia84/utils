@@ -1,4 +1,4 @@
-package com.audio.player.client;
+package com.audio.player.listener;
 
 public interface SeekBarListener {
     void notifyProgress(int progress);

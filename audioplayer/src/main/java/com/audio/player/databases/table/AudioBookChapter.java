@@ -1,31 +1,33 @@
 package com.audio.player.databases.table;
 
+import com.audio.player.databases.DBHelper;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "tb_audio_book_chapter")
+@Entity(tableName = DBHelper.TABLE_AUDIO_CHAPTER)
 public class AudioBookChapter {
     @PrimaryKey
     @NonNull
-    private String chapterId;
-    private String bookId;
-    private String uri;
-    private String name;
-    private long duration;
-    private int orderNo;
+    private String chapterId;   //章节id
+    private String bookId;//图书id
+    private String uri;//音频URL
+    private String name;//章节名称
+    private int orderNo;//章节排序
+    private long duration;//章节总时长
 
     public AudioBookChapter() {
+
     }
 
     @Ignore
-    public AudioBookChapter(String chapterId, String bookId, String uri, String name, long duration, int orderNo) {
+    public AudioBookChapter(String chapterId, String bookId, String uri, String name, int orderNo) {
         this.chapterId = chapterId;
         this.bookId = bookId;
         this.uri = uri;
         this.name = name;
-        this.duration = duration;
         this.orderNo = orderNo;
     }
 
@@ -61,19 +63,19 @@ public class AudioBookChapter {
         this.name = name;
     }
 
-    public long getDuration() {
-        return duration;
-    }
-
-    public void setDuration(long duration) {
-        this.duration = duration;
-    }
-
     public int getOrderNo() {
         return orderNo;
     }
 
     public void setOrderNo(int orderNo) {
         this.orderNo = orderNo;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
     }
 }

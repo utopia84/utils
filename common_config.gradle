@@ -53,15 +53,33 @@ project.ext {
     setDependencies = {
         extension ->
             extension.implementation fileTree(dir: 'libs', include: ['*.aar,*.jar'])
-            extension.testImplementation deps.support.junit
 
-            //基础sdk
-            //extension.implementation deps.support.androidXAppcompat
-            //extension.implementation deps.support.recyclerview
+            // Dependencies for local unit tests
+            extension.testImplementation deps.junit
+            extension.testImplementation deps.hamcrest
+            extension.testImplementation deps.arch_core.testing
+            extension.testImplementation deps.mockito.core
 
-            //rx框架
-            //extension.implementation deps.rxjava2
-            //extension.implementation deps.rx_android
-            //extension.implementation deps.rxbinding
+            // Android Testing Support Library's runner and rules
+            extension.androidTestImplementation deps.atsl.ext_junit
+            extension.androidTestImplementation deps.atsl.runner
+            extension.androidTestImplementation deps.atsl.rules
+            extension.androidTestImplementation deps.room.testing
+            extension.androidTestImplementation deps.arch_core.testing
+
+            // Dependencies for Android unit tests
+            extension.androidTestImplementation deps.junit
+            extension.androidTestImplementation deps.mockito.core, { exclude group: 'net.bytebuddy' }
+            extension.androidTestImplementation deps.dexmaker
+
+            // Espresso UI Testing
+            extension.androidTestImplementation deps.espresso.core
+            extension.androidTestImplementation deps.espresso.contrib
+            extension.androidTestImplementation deps.espresso.intents
+
+            // Resolve conflicts between main and test APK:
+            //extension.androidTestImplementation deps.annotations
+            //extension.androidTestImplementation deps.app_compat
+            //extension.androidTestImplementation deps.material
     }
 }

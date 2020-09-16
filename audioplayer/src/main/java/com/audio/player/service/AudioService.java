@@ -10,13 +10,12 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
 import com.audio.player.MediaPlayerAdapter;
-import com.audio.player.PlaybackInfoListener;
-import com.audio.player.PlayerAdapter;
+import com.audio.player.listener.PlaybackInfoListener;
 import com.audio.player.data.AudioLibrary;
 import com.audio.player.data.LoadPlayData;
 import com.audio.player.data.PlayDataLoader;
-import com.audio.player.data.PlaySPUtils;
-import com.audio.player.util.UICLog;
+import com.audio.player.listener.Callback;
+import com.audio.player.util.PlaySPUtils;
 
 import java.util.List;
 
@@ -24,9 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.media.MediaBrowserServiceCompat;
 
 /**
- * @作者 邸昌顺
- * @时间 2019/3/18 13:43
- * @描述 播放服务
+ * 播放服务
  */
 public class AudioService extends MediaBrowserServiceCompat {
 
@@ -41,9 +38,6 @@ public class AudioService extends MediaBrowserServiceCompat {
     public void onCreate() {
         super.onCreate();
 
-        //log设置
-        UICLog.setTAG("test");
-
         //用于和客户端连接
         mSession = new MediaSessionCompat(getContext(), TAG);
         playDataLoader = new PlayDataLoader();
@@ -54,9 +48,8 @@ public class AudioService extends MediaBrowserServiceCompat {
                 | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         setSessionToken(mSession.getSessionToken());
 
-        mPlayback = new MediaPlayerAdapter(getContext());
+        mPlayback = new MediaPlayerAdapter();
         mPlayback.setPlaybackInfoListener(new MediaPlayerListener());
-        UICLog.e("onCreate: AudioService creating MediaSession");
 
     }
 
@@ -70,12 +63,11 @@ public class AudioService extends MediaBrowserServiceCompat {
     public void onDestroy() {
         mPlayback.stop();
         mSession.release();
-        UICLog.e("onDestroy: MediaPlayerAdapter stopped, and MediaSession released");
     }
 
     @NonNull
     @Override
-    public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @NonNull Bundle rootHints) {
+    public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, Bundle rootHints) {
         return new BrowserRoot(AudioLibrary.getRoot(), null);
     }
 
@@ -83,12 +75,7 @@ public class AudioService extends MediaBrowserServiceCompat {
     public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
         result.detach();
         //添加数据
-        LoadPlayData.getDefault().goGetData(new LoadPlayData.LoadDataCallback() {
-            @Override
-            public void completeLoad(LoadPlayData.PlayData data) {
-                result.sendResult(data.result);
-            }
-        });
+        LoadPlayData.getDefault().getPlayData((Callback<LoadPlayData.PlayData>) data -> result.sendResult(data.result));
     }
 
     private Context getContext(){
@@ -114,7 +101,6 @@ public class AudioService extends MediaBrowserServiceCompat {
 
         @Override
         public void onPrepare() {
-            UICLog.e("MediaSessionCompat.Callback: onPrepare");
             mSession.setQueue(playDataLoader.getMediaQueue());
 
             if(playDataLoader.notToPrepare()){
@@ -129,7 +115,6 @@ public class AudioService extends MediaBrowserServiceCompat {
 
         @Override
         public void onPlay() {
-            UICLog.e("MediaSessionCompat.Callback: onPlay");
             if(playDataLoader.notReadyToPlay()){
                 return;
             }
@@ -147,19 +132,16 @@ public class AudioService extends MediaBrowserServiceCompat {
         @Override
         public void onPause() {
             mPlayback.pause();
-            UICLog.e("MediaSessionCompat.Callback: onPause");
         }
 
         @Override
         public void onStop() {
             mPlayback.stop();
             mSession.setActive(false);
-            UICLog.e("MediaSessionCompat.Callback: onStop");
         }
 
         @Override
         public void onSkipToNext() {
-            UICLog.e("MediaSessionCompat.Callback: onSkipToNext");
             if(playDataLoader.skipToNextMedia()){
                 mSession.setMetadata(playDataLoader.getPlayMediaMetadata());
                 if(!mSession.isActive()){
@@ -173,7 +155,6 @@ public class AudioService extends MediaBrowserServiceCompat {
 
         @Override
         public void onSkipToPrevious() {
-            UICLog.e("MediaSessionCompat.Callback: onSkipToPrevious");
             if(playDataLoader.skipToLastMedia()){
                 mSession.setMetadata(playDataLoader.getPlayMediaMetadata());
                 if(!mSession.isActive()){
@@ -185,13 +166,12 @@ public class AudioService extends MediaBrowserServiceCompat {
 
         @Override
         public void onSeekTo(long pos) {
-            UICLog.e("MediaSessionCompat.Callback: onSeekTo");
             mPlayback.seekTo(pos);
             PlaySPUtils.isPlayEnd = false;
         }
     }
 
-    public class MediaPlayerListener extends PlaybackInfoListener {
+    public class MediaPlayerListener implements PlaybackInfoListener {
 
         MediaPlayerListener() {}
 

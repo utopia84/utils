@@ -1,4 +1,4 @@
-package com.audio.player.data;
+package com.audio.player.util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

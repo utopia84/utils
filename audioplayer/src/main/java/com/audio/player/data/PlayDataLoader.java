@@ -5,13 +5,13 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.text.TextUtils;
 
+import com.audio.player.util.PlaySPUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @作者 邸昌顺
- * @时间 2019/7/2 10:34
- * @描述 处理数据的封装
+ * 处理数据的封装
  */
 public final class PlayDataLoader {
 

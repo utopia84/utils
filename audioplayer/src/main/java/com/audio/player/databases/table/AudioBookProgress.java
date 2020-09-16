@@ -1,63 +1,59 @@
 package com.audio.player.databases.table;
 
+import com.audio.player.databases.DBHelper;
+
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Ignore;
-import androidx.room.PrimaryKey;
 
-@Entity(tableName = "tb_audio_book_progress")
+@Entity(tableName = DBHelper.TABLE_AUDIO_PROGRESS,primaryKeys = {"userId","chapterId"})
 public class AudioBookProgress{
-    @PrimaryKey(autoGenerate = true)
-    public int id;
+    @NonNull private String userId;//用户id
+    @NonNull private String chapterId;//章节id
+    private String audioId;//章节音频id
 
-    private String bookId;
-    private String curChapterId;
-    private String curChapterName;
-    private long position;
-    private long duration;
+    private long position;//章节当前播放时长
     private boolean isSync;//true需要同步；
-    private String userId;
-    private String audioId;
-    private long updateTime;
+    private long updateTime;//更新时间
 
     public AudioBookProgress() {
 
     }
 
     @Ignore
-    public AudioBookProgress(String bookId, String curChapterId, String curChapterName, long position, long duration, boolean isSync, String userId, String audioId) {
-        this.bookId = bookId;
-        this.curChapterId = curChapterId;
-        this.curChapterName = curChapterName;
-        this.position = position;
-        this.duration = duration;
-        this.isSync = isSync;
+    public AudioBookProgress(String userId, String chapterId, long position,  boolean isSync,  String audioId) {
+        this.chapterId = chapterId;
         this.userId = userId;
+        this.position = position;
+        this.isSync = isSync;
         this.audioId = audioId;
         this.updateTime = System.currentTimeMillis();
     }
 
-    public String getBookId() {
-        return bookId;
+    @NonNull
+    public String getUserId() {
+        return userId;
     }
 
-    public void setBookId(String bookId) {
-        this.bookId = bookId;
+    public void setUserId(@NonNull String userId) {
+        this.userId = userId;
     }
 
-    public String getCurChapterId() {
-        return curChapterId;
+    @NonNull
+    public String getChapterId() {
+        return chapterId;
     }
 
-    public void setCurChapterId(String curChapterId) {
-        this.curChapterId = curChapterId;
+    public void setChapterId(@NonNull String chapterId) {
+        this.chapterId = chapterId;
     }
 
-    public String getCurChapterName() {
-        return curChapterName;
+    public String getAudioId() {
+        return audioId;
     }
 
-    public void setCurChapterName(String curChapterName) {
-        this.curChapterName = curChapterName;
+    public void setAudioId(String audioId) {
+        this.audioId = audioId;
     }
 
     public long getPosition() {
@@ -68,36 +64,12 @@ public class AudioBookProgress{
         this.position = position;
     }
 
-    public long getDuration() {
-        return duration;
-    }
-
-    public void setDuration(long duration) {
-        this.duration = duration;
-    }
-
     public boolean isSync() {
         return isSync;
     }
 
     public void setSync(boolean sync) {
         isSync = sync;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getAudioId() {
-        return audioId;
-    }
-
-    public void setAudioId(String audioId) {
-        this.audioId = audioId;
     }
 
     public long getUpdateTime() {
