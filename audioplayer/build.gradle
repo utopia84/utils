@@ -10,7 +10,7 @@ dependencies {
     implementation deps.rx_android
     implementation deps.rxjava2
 
-    implementation 'com.zjmy:yitoa-eink-utils:1.0.4'
+    //implementation 'com.zjmy:yitoa-eink-utils:1.0.4'
     //implementation project(path: ':module_common')
 }
 

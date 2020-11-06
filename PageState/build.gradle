@@ -1,0 +1,19 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion build_versions.compileSdkVersion
+    buildToolsVersion build_versions.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion build_versions.minSdkVersion
+        targetSdkVersion build_versions.targetSdkVersion
+
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
+    }
+
+}
+
+apply from: 'bintray.gradle'

@@ -1,8 +1,5 @@
 package com.audio.player.databases;
 
-import androidx.room.Room;
-import eink.yitoa.utils.common.ApplicationUtils;
-
 public class DBHelper {
     public final static String DB_NAME = "db_audio_book.db";
     public final static String TABLE_AUDIO_CHAPTER = "tb_audio_book_chapter";

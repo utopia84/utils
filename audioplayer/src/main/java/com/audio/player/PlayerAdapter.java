@@ -7,7 +7,7 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.support.v4.media.MediaMetadataCompat;
 
-import eink.yitoa.utils.common.ApplicationUtils;
+import com.audio.player.util.ApplicationUtils;
 
 /**
  * 控制app音频焦点监听事件和耳机插拔事件

@@ -1,4 +1,4 @@
-include ':lib'
+//include ':lib'
 include ':app'
 //include ':eink-views'
 //include ':common-utils'//
@@ -12,4 +12,6 @@ include ':app'
 
 //include ':EpubParser'
 //include ':HtmlParser'
-include ':audioplayer'
+//include ':audioplayer'
+include ':RuntimePermissions'
+include ':PageState'

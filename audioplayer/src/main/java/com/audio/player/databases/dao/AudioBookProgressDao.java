@@ -18,8 +18,8 @@ public interface AudioBookProgressDao {
     @Query("SELECT * FROM "+ DBHelper.TABLE_AUDIO_PROGRESS)
     Flowable<List<AudioBookProgress>>  loadAll();
 
-    @Query("SELECT * FROM "+DBHelper.TABLE_AUDIO_PROGRESS+" WHERE chapterId = :chapterId AND userid = :userId")
-    Flowable<List<AudioBookProgress>> find(String chapterId, String userId);
+    @Query("SELECT * FROM "+DBHelper.TABLE_AUDIO_PROGRESS+" WHERE bookId = :bookId AND userid = :userId")
+    Flowable<List<AudioBookProgress>> find(String bookId, String userId);
 
     //存在则替换
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -31,6 +31,6 @@ public interface AudioBookProgressDao {
     @Query("DELETE FROM " + DBHelper.TABLE_AUDIO_PROGRESS)
     void deleteAll();
 
-    @Query("DELETE FROM "+DBHelper.TABLE_AUDIO_PROGRESS+" WHERE chapterId = :chapterId AND userid = :userId")
-    void delete(String chapterId, String userId);
+    @Query("DELETE FROM "+DBHelper.TABLE_AUDIO_PROGRESS+" WHERE bookId = :bookId AND userid = :userId")
+    void delete(String bookId, String userId);
 }

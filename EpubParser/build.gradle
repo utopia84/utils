@@ -2,8 +2,9 @@ apply from: "${rootProject.rootDir}/common_config.gradle"
 project.ext.setLibraryConfig project
 
 dependencies {
-    implementation deps.dom4j
+    //implementation fileTree(dir: 'libs', include: ['*.aar,*.jar'])
     implementation 'com.jakewharton:disklrucache:2.0.2'
+    implementation files('libs/dom4j-2.1.1.jar')
 }
 
 apply from: 'bintray.gradle'

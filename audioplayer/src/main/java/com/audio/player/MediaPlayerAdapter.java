@@ -11,11 +11,10 @@ import com.audio.player.client.MediaSeekBar;
 import com.audio.player.data.AudioLibrary;
 import com.audio.player.data.LoadPlayData;
 import com.audio.player.listener.PlaybackInfoListener;
+import com.audio.player.util.ApplicationUtils;
 import com.audio.player.util.PlaySPUtils;
 import com.audio.player.listener.SeekBarEventBus;
 import com.audio.player.util.TimeCountUtil;
-
-import eink.yitoa.utils.common.ApplicationUtils;
 
 /**
  * 音频播放器封装

@@ -6,11 +6,11 @@ import com.audio.player.databases.dao.AudioBookChapterDao;
 import com.audio.player.databases.dao.AudioBookProgressDao;
 import com.audio.player.databases.table.AudioBookChapter;
 import com.audio.player.databases.table.AudioBookProgress;
+import com.audio.player.util.ApplicationUtils;
 
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import eink.yitoa.utils.common.ApplicationUtils;
 
 @Database(entities = {AudioBookProgress.class, AudioBookChapter.class},exportSchema = false, version = 1)
 public abstract class AudioBookDatabase extends RoomDatabase {

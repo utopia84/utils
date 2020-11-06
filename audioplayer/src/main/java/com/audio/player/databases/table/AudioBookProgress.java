@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 
-@Entity(tableName = DBHelper.TABLE_AUDIO_PROGRESS,primaryKeys = {"userId","chapterId"})
+@Entity(tableName = DBHelper.TABLE_AUDIO_PROGRESS,primaryKeys = {"userId","bookId","chapterId"})
 public class AudioBookProgress{
     @NonNull private String userId;//用户id
     @NonNull private String chapterId;//章节id
@@ -16,16 +16,23 @@ public class AudioBookProgress{
     private boolean isSync;//true需要同步；
     private long updateTime;//更新时间
 
+    @NonNull private String bookId;  //图书id
+    private String chapterName;//章节名称
+    private long duration;//章节时长
+
     public AudioBookProgress() {
 
     }
 
     @Ignore
-    public AudioBookProgress(String userId, String chapterId, long position,  boolean isSync,  String audioId) {
-        this.chapterId = chapterId;
-        this.userId = userId;
+    public AudioBookProgress(String bookId, String curChapterId, String curChapterName, long position, long duration, boolean isSync, String userId, String audioId) {
+        this.bookId = bookId;
+        this.chapterId = curChapterId;
+        this.chapterName = curChapterName;
         this.position = position;
+        this.duration = duration;
         this.isSync = isSync;
+        this.userId = userId;
         this.audioId = audioId;
         this.updateTime = System.currentTimeMillis();
     }
@@ -78,5 +85,29 @@ public class AudioBookProgress{
 
     public void setUpdateTime(long updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getBookId() {
+        return bookId;
+    }
+
+    public void setBookId(String bookId) {
+        this.bookId = bookId;
+    }
+
+    public String getChapterName() {
+        return chapterName;
+    }
+
+    public void setChapterName(String chapterName) {
+        this.chapterName = chapterName;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
     }
 }

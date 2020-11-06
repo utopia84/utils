@@ -383,7 +383,7 @@ public class SystemUtil {
     }
 
 
-    public int getScreenOffTime() {
+    public long getScreenOffTime() {
         long time = -1;
         try {
             time = Settings.System.getLong(mContext.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, time);
@@ -394,7 +394,7 @@ public class SystemUtil {
             e.printStackTrace();
             Toast.makeText(mContext, "无法执行相关操作，缺少系统权限！", Toast.LENGTH_SHORT).show();
         }
-        return -1;
+        return time;
     }
 
     /*

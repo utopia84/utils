@@ -1,5 +1,6 @@
 apply from: "${rootProject.rootDir}/common_config.gradle"
 project.ext.setApplicationConfig project
+apply plugin: 'android-aspectjx'
 
 android{
     defaultConfig {
@@ -15,7 +16,9 @@ android{
 dependencies {
     //implementation 'com.zjmy:yitoa-eink-utils:1.0.1'
 //    implementation project(path: ':yitoa-eink-utils')
-//    implementation project(path: ':eink-views')
+    implementation project(path: ':RuntimePermissions')
+    implementation project(path: ':PageState')
+//    implementation project(path: ':EpubParser')
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
 }
