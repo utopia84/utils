@@ -1,19 +1,18 @@
 package com.zjmy.viewbox.target;
 
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import com.zjmy.viewbox.core.MaskView;
-import com.zjmy.viewbox.core.MaskedView;
+import com.zjmy.viewbox.state.BaseStateView;
 import com.zjmy.viewbox.util.StateBoxUtil;
 
 public class ViewTarget implements Target {
     protected View mView;//初始界面
     protected MaskView mMaskView;//遮罩层
-    private MaskedView maskedView;//被遮罩层
+    private BaseStateView maskedView;//被遮罩层
 
 
-    public ViewTarget(View target , MaskView maskView , MaskedView maskedView) {
+    public ViewTarget(View target , MaskView maskView , BaseStateView maskedView) {
         mView = target;
         mMaskView = maskView;
         this.maskedView = maskedView;

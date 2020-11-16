@@ -3,25 +3,21 @@ package com.zjmy.viewbox.state;
 import android.content.Context;
 import android.view.View;
 
-import com.zjmy.viewbox.listener.OnReloadListener;
+import com.zjmy.viewbox.core.StateBox;
 import com.zjmy.viewbox.util.StateBoxUtil;
-import java.io.Serializable;
 
-public abstract class AbstractState {
+public abstract class BaseStateView {
     private View rootView;
     private Context context;
-    private OnReloadListener onReloadListener;
+    private StateBox.OnReloadListener onReloadListener;
 
-    public AbstractState() {
-    }
-
-    public AbstractState(View view, Context context, OnReloadListener onReloadListener) {
+    public BaseStateView(View view, Context context, StateBox.OnReloadListener onReloadListener) {
         this.rootView = view;
         this.context = context;
         this.onReloadListener = onReloadListener;
     }
 
-    public void setOnReloadListener(Context context, OnReloadListener onReloadListener) {
+    public void setOnReloadListener(Context context, StateBox.OnReloadListener onReloadListener) {
         this.context = context;
         this.onReloadListener = onReloadListener;
     }

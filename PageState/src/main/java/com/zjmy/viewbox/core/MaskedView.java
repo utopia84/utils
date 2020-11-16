@@ -2,11 +2,10 @@ package com.zjmy.viewbox.core;
 
 import android.view.View;
 
-import com.zjmy.viewbox.listener.OnReloadListener;
-import com.zjmy.viewbox.state.AbstractState;
+import com.zjmy.viewbox.state.BaseStateView;
 
-public class MaskedView extends AbstractState {
-    public MaskedView(View view, OnReloadListener onReloadListener) {
+public class MaskedView extends BaseStateView {
+    public MaskedView(View view, StateBox.OnReloadListener onReloadListener) {
         super(view, view.getContext(), onReloadListener);
     }
 

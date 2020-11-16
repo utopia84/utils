@@ -2,9 +2,7 @@ package com.zjmy.viewbox.core;
 
 import android.app.Activity;
 import android.view.View;
-
-import com.zjmy.viewbox.listener.OnReloadListener;
-import com.zjmy.viewbox.state.AbstractState;
+import com.zjmy.viewbox.state.BaseStateView;
 import com.zjmy.viewbox.target.Target;
 import com.zjmy.viewbox.target.ViewTarget;
 import java.util.ArrayList;
@@ -26,7 +24,7 @@ public class StateBox {
 
     public StateService register(View target , OnReloadListener listener) {
         MaskView maskView = new MaskView(target, listener);//构造遮罩层
-        MaskedView maskedView = new MaskedView(target, listener);//构造被遮罩层
+        BaseStateView maskedView = new MaskedView(target, listener);//构造被遮罩层
 
         Target targetContext = new ViewTarget(target, maskView , maskedView);
         targetContext.replaceView();
@@ -43,15 +41,15 @@ public class StateBox {
      * 全局配置
      */
     public static class Config {
-        private List<AbstractState> states = new ArrayList<>();//非正常数据展示页面集合
-        private Class<? extends AbstractState> defaultPageState = null;//初始默认界面
+        private List<BaseStateView> states = new ArrayList<>();//非正常数据展示页面集合
+        private Class<? extends BaseStateView> defaultPageState = null;//初始默认界面
 
-        public Config addState( AbstractState state) {
+        public Config addState( BaseStateView state) {
             states.add(state);
             return this;
         }
 
-        public Config addState(AbstractState state , boolean isDefault) {
+        public Config addState(BaseStateView state , boolean isDefault) {
             states.add(state);
             if (isDefault){
                 this.defaultPageState = state.getClass();
@@ -59,12 +57,16 @@ public class StateBox {
             return this;
         }
 
-        List<AbstractState> getAbstractStates() {
+        List<BaseStateView> getAbstractStates() {
             return states;
         }
 
-        Class<? extends AbstractState> getDefaultPageState() {
+        Class<? extends BaseStateView> getDefaultPageState() {
             return defaultPageState;
         }
+    }
+
+    public interface OnReloadListener {
+        void onReload(View v);
     }
 }

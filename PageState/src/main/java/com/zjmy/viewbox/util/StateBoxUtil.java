@@ -10,12 +10,6 @@ public class StateBoxUtil {
 
     @SafeVarargs
     public static <T> boolean checkNotNull(T... arg) {
-        return checkNotNull( "Argument must not be null" , arg);
-    }
-
-
-    @SafeVarargs
-    public static <T> boolean checkNotNull(String message, T... arg) {
         if (arg == null || arg.length == 0){
             return false;
         }

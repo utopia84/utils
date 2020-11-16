@@ -1,6 +1,6 @@
 package com.zjmy.viewbox.core;
 
-import com.zjmy.viewbox.state.AbstractState;
+import com.zjmy.viewbox.state.BaseStateView;
 import com.zjmy.viewbox.target.Target;
 import com.zjmy.viewbox.util.StateBoxUtil;
 
@@ -44,7 +44,7 @@ public class StateService {
      * 按照类名显示遮罩层里已有的状态
      * @param state class
      */
-    public void show(Class<? extends AbstractState> state) {
+    public void show(Class<? extends BaseStateView> state) {
         if (StateBoxUtil.checkNotNull(maskView)) {
             maskView.show(state);
         }
@@ -63,7 +63,7 @@ public class StateService {
      * @param state 页面状态
      * @return StateService
      */
-    public StateService addStatePage(AbstractState state) {
+    public StateService addStatePage(BaseStateView state) {
         if (StateBoxUtil.checkNotNull(maskView)) {
             maskView.addStatePage(state);
         }

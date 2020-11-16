@@ -7,7 +7,6 @@ ext.deps = [:]
 
 //版本号控制区域
 def versions = [:]
-versions.android_gradle_plugin = '3.5.3'
 versions.support = "28.0.0"
 versions.glide = "4.9.0"
 versions.retrofit = "2.3.0"
@@ -18,7 +17,7 @@ versions.arouter_compiler = "1.1.4"
 versions.arouter_api = "1.3.1"
 versions.objectbox = "2.4.0"
 versions.fireCrasher = "1.5.1"
-versions.okhttp = "4.8.1"
+versions.okhttp = "4.9.0"
 versions.logging_interceptor = "3.4.1"
 versions.eventbus = "3.1.1"
 versions.alicloud_android_push = "3.1.9.1"
@@ -87,8 +86,6 @@ room.rxjava2 = "androidx.room:room-rxjava2:$versions.room_version"
 room.testing = "androidx.room:room-testing:$versions.room_version"
 deps.room = room
 
-
-deps.android_gradle_plugin = "com.android.tools.build:gradle:$versions.android_gradle_plugin"
 deps.rx_android = "io.reactivex.rxjava2:rxandroid:$versions.rx_android"
 deps.rxjava2 = "io.reactivex.rxjava2:rxjava:$versions.rxjava2"
 

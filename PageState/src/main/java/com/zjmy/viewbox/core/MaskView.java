@@ -4,10 +4,8 @@ import android.annotation.SuppressLint;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-
-import com.zjmy.viewbox.listener.OnReloadListener;
 import com.zjmy.viewbox.util.StateBoxUtil;
-import com.zjmy.viewbox.state.AbstractState;
+import com.zjmy.viewbox.state.BaseStateView;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,18 +13,18 @@ import java.util.Map;
 
 @SuppressLint("ViewConstructor")
 public class MaskView extends FrameLayout {
-    private Map<Class<? extends AbstractState>, AbstractState> callbacks = new HashMap<>();
+    private Map<Class<? extends BaseStateView>, BaseStateView> callbacks = new HashMap<>();
 
-    private Class<? extends AbstractState> preCallback;
-    private OnReloadListener reloadListener;
+    private Class<? extends BaseStateView> preCallback;
+    private StateBox.OnReloadListener reloadListener;
 
-    public MaskView(View view , OnReloadListener reloadListener) {
+    public MaskView(View view , StateBox.OnReloadListener reloadListener) {
         super(view.getContext());
         this.reloadListener = reloadListener;
     }
 
 
-    public void setupSuccessLayout(AbstractState state) {
+    public void setupSuccessLayout(BaseStateView state) {
         addStatePage(state);
         View rootView = state.getRootView();
         rootView.setVisibility(View.INVISIBLE);
@@ -35,22 +33,22 @@ public class MaskView extends FrameLayout {
                 ViewGroup.LayoutParams.MATCH_PARENT));
     }
 
-    public void addAllState(List<AbstractState> states) {
+    public void addAllState(List<BaseStateView> states) {
         if (states != null && !states.isEmpty()) {
-            for (AbstractState state : states) {
+            for (BaseStateView state : states) {
                 addStatePage(state);
             }
         }
     }
 
-    public void addStatePage(AbstractState state) {
+    public void addStatePage(BaseStateView state) {
         if (state != null ) {
             state.setOnReloadListener(getContext(), reloadListener);
             callbacks.put(state.getClass(), state);
         }
     }
 
-    public void show(final Class<? extends AbstractState> state) {
+    public void show(final Class<? extends BaseStateView> state) {
         if (state != null) {
             if (StateBoxUtil.isMainThread()) {
                 showWithMainThread(state);
@@ -61,16 +59,16 @@ public class MaskView extends FrameLayout {
     }
 
 
-    private void showWithMainThread(Class<? extends AbstractState> status) {
+    private void showWithMainThread(Class<? extends BaseStateView> status) {
 
         if (preCallback == status) {//重复调用
             return;
         }
 
         //销毁上一个页面
-        AbstractState preAbstractState = callbacks.get(preCallback);
-        if (preAbstractState != null) {
-            preAbstractState.onDetach();
+        BaseStateView preBaseStateView = callbacks.get(preCallback);
+        if (preBaseStateView != null) {
+            preBaseStateView.onDetach();
         }
 
         //清理容器页面元素
@@ -79,15 +77,15 @@ public class MaskView extends FrameLayout {
         }
 
         MaskedView maskedView = (MaskedView) callbacks.get(MaskedView.class);
-        AbstractState currentAbstractState = callbacks.get(status);
+        BaseStateView currentBaseStateView = callbacks.get(status);
         if (status == MaskedView.class && maskedView != null){
             //显示被遮罩层
             maskedView.show();
-        }else if (currentAbstractState != null && maskedView != null){
+        }else if (currentBaseStateView != null && maskedView != null){
             maskedView.hide();
-            View rootView = currentAbstractState.getRootView();
+            View rootView = currentBaseStateView.getRootView();
             addRootView(rootView);
-            currentAbstractState.onAttach(getContext(), rootView);
+            currentBaseStateView.onAttach(getContext(), rootView);
         }
 
         preCallback = status;
