@@ -65,7 +65,7 @@ public class UploadManager implements Upload {
             put.setCallbackParam(new HashMap<String, String>() {{
                 put("callbackUrl", mCallbackAddress);
                 put("callbackBodyType", "application/json");
-                put("callbackBody", "{\"fileName\":${x:var1},\"objectName\":${x:var2}}")
+                put("callbackBody", "{\"fileName\":${x:var1},\"objectName\":${x:var2}}");
             }});
 
             put.setCallbackVars(new HashMap<String, String>() {{

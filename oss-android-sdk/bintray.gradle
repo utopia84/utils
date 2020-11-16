@@ -15,7 +15,7 @@ bintray {
     println user
     pkg {
         repo = 'eink'
-        name = "permission"
+        name = "oss-sdk"
         licenses = ["Apache-2.0"]
         websiteUrl = siteUrl
         vcsUrl = gitUrl
@@ -23,7 +23,7 @@ bintray {
 
         version {
             name = version
-            desc = '基于字节码技术aspectj，封装的android权限管理库'
+            desc = '基于阿里对象存储封装的上传下载sdk'
             released = new Date()
             vcsTag = "v"+ version
             //attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
@@ -40,7 +40,7 @@ install {
             project {
                 packaging 'aar'
                 // Add your description here
-                name "permission"
+                name "util"
                 description 'Eink 工具类'
                 url siteUrl
                 // Set your license
